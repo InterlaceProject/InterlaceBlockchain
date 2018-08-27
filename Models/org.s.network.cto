@@ -1,0 +1,128 @@
+//import ../models/org.composer.base.*
+namespace org.s.network 
+
+/////////////////////////////////////////////////////////////////////
+//ABSTRACT LIBRARY
+/////////////////////////////////////////////////////////////////////
+abstract participant Member identified by MemberID {
+ 	o String MemberID 
+  o String[] email // Indirizzi e-mail
+  o String[] phone // Numeri di telefono
+  --> CCAccount ccAccount
+//  --> DomuAccount domuAccount optional
+//  --> MirrorAccount mirrorAccount optional
+//  --> TopupAccount topupAccount optional
+//  --> IncomeAccount incomeAccount optional
+//  --> BisooAccount bisooAccount optional
+//  --> PrepaidAccount prepaidAccount optional
+//  --> Card[] cards
+}
+
+abstract asset Account identified by AccountID {
+  o String AccountID
+  o Unit UnitID
+  o Double Balance
+  --> Member member
+}
+
+abstract asset MemberAccount extends Account {
+}
+
+//asset Card identified by cardID {
+//  o String cardID
+//  o Boolean Active
+//}
+
+abstract transaction Transfer {
+  o Double amount
+  // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
+  --> Account senderAccount
+  --> Account recipientAccount
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// PARTICIPANTS
+/////////////////////////////////////////////////////////////////////
+participant Subscriber extends Member{
+  o String entityName // Nome della società
+  o String entityAddress // Indirizzo della società
+  o String[] gps // Coordinate GPS
+  o String VAT // Numero IVA 
+  o String FirstName optional // Nome
+  o String SurName optional // Cognome
+  o Double capacity optional // Disponibilità commerciale
+  o DateTime capacityDate optional // Data  Disponibilità commerciale 
+  o Double availableCapacity optional // Disponibilità commerciale residua
+  o Double rewardRate optional // %rate of reward to consumer, in SRD
+  o Double[] euroFee optional // %fee on B2C EUR sales, in EUR
+  o Double acceptanceRate optional // Rate of SRD acceptance in consumer purchases
+  o Double creditPercent optional // %SRD acceptance for transactions above 1000
+}
+
+participant Individual extends Member{
+  o String FirstName optional // Nome
+  o String SurName optional // Cognome
+  o String employedBy optional // Datore di lavoro
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// TRANSACTIONS
+/////////////////////////////////////////////////////////////////////
+transaction CreditTransfer extends Transfer{
+  o String transferLabel default = "Credit Transfer"
+}
+
+transaction DebitTransfer extends Transfer{
+  o String transferLabel default = "Debit Transfer"
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// ENUMS 
+/////////////////////////////////////////////////////////////////////
+enum Unit{
+  o Euro
+  o SRD
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//ASSETS
+/////////////////////////////////////////////////////////////////////
+asset SysAccount extends Account {
+}
+
+asset CCAccount extends MemberAccount{
+  o Double creditLimit
+  o DateTime creditLimitDate
+  o Double availableBalance
+}
+
+/*
+asset DomuAccount extends MemberAccount {
+}
+
+asset MirrorAccount extends MemberAccount {
+  o Double upperLimit
+  o Double availableCapacity
+  o Double lowBalanceAlert optional
+  o Double highBalanceAlert optional
+  o Double highVolumeAlert optional
+}
+
+asset IncomeAccount extends MemberAccount{
+}
+
+asset PrepaidAccount extends MemberAccount{
+  o Double creditLimit
+  o Double lowBalanceAlert optional
+}
+
+asset BisooAccount extends MemberAccount{
+}
+
+asset TopupAccount extends MemberAccount{
+}
+*/

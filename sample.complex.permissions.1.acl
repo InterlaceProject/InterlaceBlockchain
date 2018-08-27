@@ -1,0 +1,236 @@
+/* Admin */
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+/* Common */
+
+rule CommonReadTransactionRegistry {
+    description: "Allow all participants to read transaction registry"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: READ
+    resource: "org.hyperledger.composer.system.TransactionRegistry"
+    action: ALLOW
+}
+
+rule CommonReadParticipantRegistry {
+    description: "Allow all participants to read participant registry"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: READ
+    resource: "org.hyperledger.composer.system.ParticipantRegistry"
+    action: ALLOW
+}
+
+rule CommonReadAssetRegistry {
+    description: "Allow all participants to read asset registry"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: READ
+    resource: "org.hyperledger.composer.system.AssetRegistry"
+    action: ALLOW
+}
+
+rule CommonReadNetwork {
+    description: "Allow all participants to read network"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: READ
+    resource: "org.hyperledger.composer.system.Network"
+    action: ALLOW
+}
+
+/* Trader */
+
+rule TraderManageClient {
+    description: "Allow traders to read all clients"
+    participant: "org.acme.mynetwork.Trader"
+    operation: ALL
+    resource: "org.acme.mynetwork.Client"
+    action: ALLOW
+}
+
+rule TraderManageOwnTrades {
+    description: "Allow traders to manage their trades"
+    participant(t): "org.acme.mynetwork.Trader"
+    operation: ALL
+    resource(tt): "org.acme.mynetwork.Trade"
+    condition: (tt.trader.getIdentifier() == t.getIdentifier())
+    action: ALLOW
+}
+
+rule TraderManageLots {
+    description: "Allow traders to read and create lots"
+    participant: "org.acme.mynetwork.Trader"
+    operation: READ, CREATE
+    resource: "org.acme.mynetwork.Lot"
+    action: ALLOW
+}
+
+rule TraderUpdateLots {
+    description: "Allow traders to update lots via Trade transaction"
+    participant: "org.acme.mynetwork.Trader"
+    operation: UPDATE
+    resource: "org.acme.mynetwork.Lot"
+    transaction: "org.acme.mynetwork.Trade"
+    action: ALLOW
+}
+
+rule TraderReadOwnTrader {
+    description: "Allow traders to read their own info"
+    participant(t): "org.acme.mynetwork.Trader"
+    operation: READ
+    resource(tt): "org.acme.mynetwork.Trader"
+    condition: (tt.getIdentifier() == t.getIdentifier())
+    action: ALLOW  
+}
+
+rule TraderAddAsset {
+    description: "Allow traders to add assets to registry"
+    participant: "org.acme.mynetwork.Trader"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.AddAsset"
+    action: ALLOW  
+}
+
+rule TraderCreateHistorianRecord {
+    description: "Allow traders to create historian record"
+    participant: "org.acme.mynetwork.Trader"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.HistorianRecord"
+    action: ALLOW  
+}
+
+rule TraderReadOwnHistorianRecord {
+    description: "Allow traders to read their own historian record"
+    participant(t): "org.acme.mynetwork.Trader"
+    operation: READ
+    resource(hr): "org.hyperledger.composer.system.HistorianRecord"
+    condition: (hr.transactionType == "org.acme.mynetwork.Trade" && hr.participantInvoking.getIdentifier() == t.getIdentifier())
+    action: ALLOW
+}
+
+/* Client */
+
+rule ClientReadOwnTrades {
+    description: "Allow clients to view their trades"
+    participant(c): "org.acme.mynetwork.Client"
+    operation: READ
+    resource(t): "org.acme.mynetwork.Trade"
+    condition: (t.client.getIdentifier() == c.getIdentifier())
+    action: ALLOW
+}
+
+rule ClientReadOwnEvents {
+    description: "Allow clients to subscribe to NewTrade events"
+    participant(c): "org.acme.mynetwork.Client"
+    operation: READ
+    resource(e): "org.acme.mynetwork.NewTradeEvent"
+    condition: (e.lot.owner.getIdentifier() == c.getIdentifier())
+    action: ALLOW
+}
+
+rule ClientReadOwnLots {
+    description: "Allow clients to view lots they own"
+    participant(c): "org.acme.mynetwork.Client"
+    operation: READ
+    resource(s): "org.acme.mynetwork.Lot"
+    condition: (s.owner.getIdentifier() == c.getIdentifier())
+    action: ALLOW  
+}
+
+rule ClientReadOwnClient {
+    description: "Allow clients to view their info"
+    participant(c): "org.acme.mynetwork.Client"
+    operation: READ
+    resource(cc): "org.acme.mynetwork.Client"
+    condition: (cc.getIdentifier() == c.getIdentifier())
+    action: ALLOW  
+}
+
+rule ClientReadTraders {
+    description: "Allow clients to view traders"
+    participant: "org.acme.mynetwork.Client"
+    operation: READ
+    resource: "org.acme.mynetwork.Trader"
+    action: ALLOW
+}
+
+rule ClientReadHistorianRecord {
+    description: "Allow clients to view their historian records"
+    participant(c): "org.acme.mynetwork.Client"
+    operation: READ
+    resource(hr): "org.hyperledger.composer.system.HistorianRecord"
+    condition: (hr.transactionType == "org.acme.mynetwork.Trade" && hr.transactionInvoked.client.getIdentifier() == c.getIdentifier())
+    action: ALLOW
+}
+
+/* Custodian */
+
+rule CustodianReadAllTrades {
+    description: "Allow custodian to view all trades"
+    participant: "org.acme.mynetwork.Custodian"
+    operation: READ
+    resource: "org.acme.mynetwork.Trade"
+    action: ALLOW
+}
+
+rule CustodianReadAllLots {
+    description: "Allow custodian to view all lots"
+    participant: "org.acme.mynetwork.Custodian"
+    operation: READ
+    resource: "org.acme.mynetwork.Lot"
+    action: ALLOW
+}
+
+rule CustodianReadAllClients {
+    description: "Allow custodian to view all clients"
+    participant: "org.acme.mynetwork.Custodian"
+    operation: READ
+    resource: "org.acme.mynetwork.Client"
+    action: ALLOW
+}
+
+rule CustodianReadAllEvents {
+    description: "Allow custodian to subscribe to NewTrade events"
+    participant: "org.acme.mynetwork.Custodian"
+    operation: READ
+    resource: "org.acme.mynetwork.NewTradeEvent"
+    action: ALLOW
+}
+
+rule CustodianReadAllTraders {
+    description: "Allow custodian to view all traders"
+    participant: "org.acme.mynetwork.Custodian"
+    operation: READ
+    resource: "org.acme.mynetwork.Trader"
+    action: ALLOW
+}
+
+rule CustodianReadOwnCustodian {
+    description: "Allow custodian to view their info"
+    participant(c): "org.acme.mynetwork.Custodian"
+    operation: READ
+    resource(cc): "org.acme.mynetwork.Custodian"
+    condition: (cc.getIdentifier() == c.getIdentifier())
+    action: ALLOW  
+}
+
+rule CustodianReadHistorianRecord {
+    description: "Allow custodian to view all trade historian records"
+    participant(t): "org.acme.mynetwork.Custodian"
+    operation: READ
+    resource(hr): "org.hyperledger.composer.system.HistorianRecord"
+    condition: (hr.transactionType == "org.acme.mynetwork.Trade")
+    action: ALLOW
+}
