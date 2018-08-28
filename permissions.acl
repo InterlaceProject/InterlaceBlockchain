@@ -36,7 +36,7 @@ rule MembersAccessCreditRecord {
 
 rule SystemACL {
   description:  "System ACL to permit all access"
-  participant: "org.s.Participant"
+  participant: "org.s.network.Participant"
   operation: ALL
   resource: "org.s.**"
   action: ALLOW
@@ -44,7 +44,7 @@ rule SystemACL {
 
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
-    participant: "org.s.NetworkAdmin"
+    participant: "org.s.Network.NetworkAdmin"
     operation: ALL
     resource: "**"
     action: ALLOW
@@ -52,10 +52,8 @@ rule NetworkAdminUser {
 
 rule NetworkAdminSystem {
     description: "Grant business network administrators full access to system resources"
-    participant: "org.s.NetworkAdmin"
+    participant: "org.s.Network.NetworkAdmin"
     operation: ALL
     resource: "org.s.**"
     action: ALLOW
 }
-
-

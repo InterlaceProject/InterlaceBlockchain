@@ -8,7 +8,7 @@ abstract participant Member identified by MemberID {
  	o String MemberID 
   o String[] email // Indirizzi e-mail
   o String[] phone // Numeri di telefono
-  --> CCAccount ccAccount
+//  --> CCAccount ccAccount
 //  --> DomuAccount domuAccount optional
 //  --> MirrorAccount mirrorAccount optional
 //  --> TopupAccount topupAccount optional
