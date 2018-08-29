@@ -66,8 +66,11 @@ then
   exit 1
 fi
 
+export PATH=${PWD}/../bin:${PWD}:$PATH
+export FABRIC_CFG_PATH=${PWD}
+export VERBOSE=false
+export FABRIC_VERSION="hlfv11"
+
 cryptogen generate --config=./crypto-config.yaml
-export FABRIC_CFG_PATH=$PWD
-export FABRIC_VERSION="hlfv12"
 configtxgen -profile InterlaceOrdererGenesis -outputBlock ./interlace-genesis.block && \
   configtxgen -profile InterlaceChannel -outputCreateChannelTx ./interlace-channel.tx -channelID interlacechannel
