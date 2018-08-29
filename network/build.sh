@@ -56,12 +56,14 @@ if [[ $res -gt 1 ]]
 then
   [[ $res == 3 ]] && version_configtxgen="undefined"
   echo "configtxgen should have at least version $required_version but has $version_configtxgen"
+  exit 1
 fi
 res=$(vercomp "$version_cryptogen" "$required_version")
 if [[ $res -gt 1 ]]
 then
   [[ $res == 3 ]] && version_cryptogen="undefined"
   echo "cryptogen should have at least version $required_version but has $version_cryptogen"
+  exit 1
 fi
 
 cryptogen generate --config=./crypto-config.yaml
