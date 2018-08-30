@@ -2,7 +2,7 @@
   "name": "sardex-open-network",
   "author": "theSardLabTeam",
   "description": "Start from scratch with a blank minimal mutual credit  network",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "devDependencies": {
     "browserfs": "^1.2.0",
     "chai": "^3.5.0",

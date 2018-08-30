@@ -1,2 +1,5 @@
-network/crypto-config/
+chain/network/crypto-config/
+chain/network/interlace-*
+.composer/
+chain/.composer
 node_modules/
