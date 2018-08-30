@@ -3,16 +3,16 @@ namespace net.sardex.interlace
 /////////////////////////////////////////////////////////////////////
 //ABSTRACT LIBRARY
 /////////////////////////////////////////////////////////////////////
-abstract participant Member identified by MemberID {
- 	o String MemberID 
+abstract participant Member identified by memberID {
+ 	o String memberID 
   o String[] email // e-mail
   o String[] phone // telephone number
 }
 
-abstract asset Account identified by AccountID {
-  o String AccountID
-  o Unit UnitID
-  o Double Balance
+abstract asset Account identified by accountID {
+  o String accountID
+  o Unit unit
+  o Double balance
   --> Member member
 }
 
@@ -32,10 +32,11 @@ abstract transaction Transfer {
 participant Subscriber extends Member {
   o String entityName // Nome della societ
   o String entityAddress // Indirizzo della societ
-  o String[] gps // Coordinate GPS
+  /*
+  o String[] GPS // Coordinate GPS
   o String VAT // Numero IVA
-  o String FirstName optional // Nome
-  o String SurName optional // Cognome
+  o String firstName optional // Nome
+  o String surName optional // Cognome
   o Double capacity optional // Disponibilit commerciale
   o DateTime capacityDate optional // Data  Disponibilit commerciale
   o Double availableCapacity optional // Disponibilit commerciale residua
@@ -43,11 +44,12 @@ participant Subscriber extends Member {
   o Double[] euroFee optional // fee on B2C EUR sales, in EUR
   o Double acceptanceRate optional // Rate of SRD acceptance in consumer purchases
   o Double creditPercent optional // SRD acceptance for transactions above 1000
+  */
 }
 
 participant Individual extends Member {
-  o String FirstName optional // Nome
-  o String SurName optional // Cognome
+  o String firstName optional // Nome
+  o String surName optional // Cognome
   o String employedBy optional // Datore di lavoro
 }
 
@@ -56,11 +58,11 @@ participant Individual extends Member {
 // TRANSACTIONS
 /////////////////////////////////////////////////////////////////////
 transaction CreditTransfer extends Transfer {
-  o TransferLabel transferLabel default = CreditTransfer
+  o TransferLabel transferLabel default = "CreditTransfer"
 }
 
 transaction DebitTransfer extends Transfer {
-  o TransferLabel transferLabel default = DebitTransfer
+  o TransferLabel transferLabel default = "DebitTransfer"
 }
 
 
