@@ -1,0 +1,63 @@
+/**
+ * Access control rules for decentralized-credit-network
+ */
+
+rule Default {
+    description: "Allow all participants access to all resources"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.s.network.*"
+    action: ALLOW
+}
+
+//Members to have access only to their own account
+//rule MembersAccessOwnRecord {
+//    description: "Allow Members to access only their profile"
+//    participant(p): "org.s.network.Member"
+//    operation: READ, UPDATE, DELETE
+//    resource(r): "org.s.network.Member"
+//    condition: (r.getIdentifier() === p.getIdentifier())
+//    action: ALLOW
+//}
+
+//Members to have read only access to other Members
+//rule MembersReadAccessMembers {
+//    description: "Allow Members read access to other Members"
+//    participant: "org.s.network.Member"
+//    operation: READ
+//    resource: "org.s.network.Member"
+//    action: ALLOW
+//}
+
+//Members to have read access to all credit assets
+//rule MembersAccessCreditRecord {
+//    description: "Allow Members read access to all credit assets"
+//    participant: "org.s.network.Member"
+//    operation: READ
+//    resource: "org.s.network.Unit"
+//    action: ALLOW
+//}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}

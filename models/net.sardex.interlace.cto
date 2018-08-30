@@ -1,0 +1,85 @@
+namespace net.sardex.interlace.cto
+
+/////////////////////////////////////////////////////////////////////
+//ABSTRACT LIBRARY
+/////////////////////////////////////////////////////////////////////
+abstract participant Member identified by MemberID {
+ 	o String MemberID 
+  o String[] email // e-mail
+  o String[] phone // telephone number
+}
+
+abstract asset Account identified by AccountID {
+  o String AccountID
+  o Unit UnitID
+  o Double Balance
+  --> Member member
+}
+
+abstract asset MemberAccount extends Account {}
+
+abstract transaction Transfer {
+  o Double amount
+  // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
+  --> Account senderAccount
+  --> Account recipientAccount
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// PARTICIPANTS
+/////////////////////////////////////////////////////////////////////
+participant Subscriber extends Member{
+  o String entityName // Nome della società
+  o String entityAddress // Indirizzo della società
+  o String[] gps // Coordinate GPS
+  o String VAT // Numero IVA 
+  o String FirstName optional // Nome
+  o String SurName optional // Cognome
+  o Double capacity optional // Disponibilità commerciale
+  o DateTime capacityDate optional // Data  Disponibilità commerciale 
+  o Double availableCapacity optional // Disponibilità commerciale residua
+  o Double rewardRate optional // %rate of reward to consumer, in SRD
+  o Double[] euroFee optional // %fee on B2C EUR sales, in EUR
+  o Double acceptanceRate optional // Rate of SRD acceptance in consumer purchases
+  o Double creditPercent optional // %SRD acceptance for transactions above 1000
+}
+
+participant Individual extends Member{
+  o String FirstName optional // Nome
+  o String SurName optional // Cognome
+  o String employedBy optional // Datore di lavoro
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// TRANSACTIONS
+/////////////////////////////////////////////////////////////////////
+transaction CreditTransfer extends Transfer {
+  o String transferLabel default = "Credit Transfer"
+}
+
+transaction DebitTransfer extends Transfer {
+  o String transferLabel default = "Debit Transfer"
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// ENUMS 
+/////////////////////////////////////////////////////////////////////
+enum Unit{
+  o Euro
+  o SRD
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//ASSETS
+/////////////////////////////////////////////////////////////////////
+asset SysAccount extends Account {}
+
+asset CCAccount extends MemberAccount {
+  o Double creditLimit
+  o DateTime creditLimitDate
+  o Double availableBalance
+}
