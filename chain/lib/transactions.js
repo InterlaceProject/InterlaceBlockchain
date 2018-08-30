@@ -1,6 +1,6 @@
  /**
  * Sample transaction processor function.
- * @param {org.decentralized.credit.network.CreditTransfer} transfer The sample transaction instance.
+ * @param {net.sardex.interlace.CreditTransfer} transfer The sample transaction instance.
  * @transaction
  */
 function CreditTransfer(transfer) {
@@ -8,7 +8,7 @@ function CreditTransfer(transfer) {
 
 /**
  * Sample transaction processor function.
- * @param {org.decentralized.credit.network.DebitTransfer} transfer The sample transaction instance.
+ * @param {net.sardex.interlace.DebitTransfer} transfer The sample transaction instance.
  * @transaction
  */
 function DebitTransfer(transfer) {
