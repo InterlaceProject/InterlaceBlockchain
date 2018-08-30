@@ -9,17 +9,14 @@ const TransferLabel_DebitTransfer = "DebitTransfer";
 async function CreditTransfer(transfer) {
 	//some error checking
 	if (transfer.transferLabel != TransferLabel_CreditTransfer) {
-		console.log("Wrong transfer label");
-		return;
+		throw new Error("Wrong transfer label");
 	}
 	if (transfer.amount <= 0) {
-		console.log("Transfer amount must be a positive value.");
-		return;
+		throw new Error("Transfer amount must be a positive value.");
 	}
 	if (transfer.senderAccount.balance < transfer.amount) {
-		console.log("Transfer amount " + transfer.amount + 
+		throw new Error("Transfer amount " + transfer.amount + 
 					" is bigger than the available balance of " + transfer.senderAccount.balance);
-		return;
 	}
 	
 	//move money
@@ -41,8 +38,7 @@ async function CreditTransfer(transfer) {
 async function DebitTransfer(transfer) {
 	//some error checking
 	if (transfer.transferLabel != TransferLabel_DebitTransfer) {
-		console.log("Wrong transfer label");
-		return;
+		throw new Error("Wrong transfer label");
 	}
-	console.log("not implemented");
+	throw new Error("not implemented");
 }
