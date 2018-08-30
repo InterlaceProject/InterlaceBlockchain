@@ -4,7 +4,7 @@
 
 General architecture:
 
-![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/Figs/Architecture.jpg)
+![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/Architecture.jpg)
 
 
 
@@ -12,4 +12,4 @@ General architecture:
 
 .cto model diagram:
 
-![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/Figs/DCN_V9.jpg)
+![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/DCN_V9.jpg)
