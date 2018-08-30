@@ -71,11 +71,11 @@ participant Individual extends Member{
 // TRANSACTIONS
 /////////////////////////////////////////////////////////////////////
 transaction CreditTransfer extends Transfer{
-  o String transferLabel default = "Credit Transfer"
+//  o String transferLabel default = "Credit Transfer"
 }
 
 transaction DebitTransfer extends Transfer{
-  o String transferLabel default = "Debit Transfer"
+//  o String transferLabel default = "Debit Transfer"
 }
 
 
