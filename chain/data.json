@@ -1,0 +1,40 @@
+{
+  "$class": "net.sardex.interlace.CreditTransfer",
+  "transferLabel": "CreditTransfer",
+  "amount": 200,
+  "senderAccount":
+  	"resource:net.sardex.interlace.CCAccount#A1",
+  "recipientAccount":
+  	"resource:net.sardex.interlace.CCAccount#A2"
+}
+
+{
+  "$class": "net.sardex.interlace.CCAccount",
+  "creditLimit": 0,
+  "creditLimitDate": "2018-08-30T19:11:40.212Z",
+  "availableBalance": 1000,
+  "accountID": "A1",
+  "unit": "SRD",
+  "balance": 1000,
+  "member": "resource:net.sardex.interlace.Subscriber#MI1"
+}
+
+{
+  "$class": "net.sardex.interlace.Individual",
+  "firstName": "f1",
+  "surName": "s1",
+  "employedBy": "ab",
+  "memberID": "M1",
+  "email": ["mail@mail.com"],
+  "phone": ["0815"]
+}
+
+{
+  "$class": "net.sardex.interlace.Individual",
+  "firstName": "f2",
+  "surName": "s2",
+  "employedBy": "cd",
+  "memberID": "M2",
+  "email": ["mail1@mail.com"],
+  "phone": ["4711"]
+}
