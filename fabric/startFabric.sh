@@ -68,11 +68,11 @@ sleep ${FABRIC_START_TIMEOUT}
 
 # Create the channel
 echo "--> creating channel on ${PEER0}"
-docker exec ${PEER0} peer channel create -o ${ORDERER}:7050 -c ${CHANNEL} -f /etc/hyperledger/configtx/${CHANNELTX}
+docker exec ${PEER0} peer channel create -o ${ORDERER}:7050 -c ${CHANNELID} -f /etc/hyperledger/configtx/${CHANNELTX}
 
 # Join peer0.org1.example.com to the channel.
 echo "--> joining channel on ${PEER0}"
-docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/${ADMIN}/msp" ${PEER0} peer channel join -b ${GENESISBLOCK}
+docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/${ADMIN}/msp" ${PEER0} peer channel join -b ${CHANNELBLOCK}
 
 if [ "${FABRIC_DEV_MODE}" == "true" ]; then
     echo "Fabric Network started in chaincode development mode"

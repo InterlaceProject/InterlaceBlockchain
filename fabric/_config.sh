@@ -5,6 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export FABRIC_START_TIMEOUT=15
 export CHANNELID=interlacechannel
 export CHANNELTX=interlace-channel.tx
+export CHANNELBLOCK=${CHANNELID}.block
 export GENESISBLOCK=interlace-genesis.block
 export ADMIN=Admin@sardex.sardex.net
 

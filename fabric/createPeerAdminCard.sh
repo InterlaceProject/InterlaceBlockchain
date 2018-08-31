@@ -131,7 +131,7 @@ cat << EOF > DevServer_connection.json
     "certificateAuthorities": {
         "${CAUTH}": {
             "url": "http://${HOST}:7054",
-            "caName": "ca.org1.example.com"
+            "caName": "${CAUTH}"
         }
     }
 }

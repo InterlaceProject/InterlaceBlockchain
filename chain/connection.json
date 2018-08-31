@@ -1,41 +1,41 @@
 {
-    "name": "fabric-network",
+    "name": "sardex-open-network",
     "x-type": "hlfv1",
     "version": "1.0.0",
     "peers": {
-        "peer0.org1.example.com": {
+        "peer0.sardex.sardex.net": {
             "url": "grpc://localhost:7051"
         }
     },
     "certificateAuthorities": {
-        "ca.org1.example.com": {
+        "ca.sardex.sardex.net": {
             "url": "http://localhost:7054",
-            "caName": "ca.org1.example.com"
+            "caName": "ca.sardex.sardex.net"
         }
     },
     "orderers": {
-        "orderer.example.com": {
+        "orderer.sardex.net": {
             "url": "grpc://localhost:7050"
         }
     },
     "organizations": {
-        "Org1": {
-            "mspid": "Org1MSP",
+        "Sardex": {
+            "mspid": "SardexMSP",
             "peers": [
-                "peer0.org1.example.com"
+                "peer0.sardex.sardex.net"
             ],
             "certificateAuthorities": [
-                "ca.org1.example.com"
+                "ca.sardex.sardex.net"
             ]
         }
     },
     "channels": {
-        "composerchannel": {
+        "interlacechannel": {
             "orderers": [
-                "orderer.example.com"
+                "orderer.sardex.net"
             ],
             "peers": {
-                "peer0.org1.example.com": {
+                "peer0.sardex.sardex.net": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
@@ -44,7 +44,7 @@
         }
     },
     "client": {
-        "organization": "Org1",
+        "organization": "Sardex",
         "connection": {
             "timeout": {
                 "peer": {
