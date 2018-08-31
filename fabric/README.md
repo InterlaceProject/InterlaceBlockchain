@@ -1,6 +1,6 @@
 # Config Information
 
-In file $_config.sh$ bash variables need to be pre-defined. The fabric script relay on that configuration in order to run correctly. 
+In file **_config.sh** bash variables need to be pre-defined. The fabric script relay on that configuration in order to run correctly. 
 
 The following variable are available:
 
