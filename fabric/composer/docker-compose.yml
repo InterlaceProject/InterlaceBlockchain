@@ -6,7 +6,6 @@ services:
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.sardex.sardex.net
-
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sardex.sardex.net-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/f0033ae539e86794755eee0aadc61213b9c670144718cbbd28b656383de7fc50_sk -b admin:adminpw -d'
