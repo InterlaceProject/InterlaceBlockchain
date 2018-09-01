@@ -7,6 +7,7 @@ This directory contains all important script and config files to start the Inter
 * To start just execute **startNetwork.sh**.
 * To stop call **stopNetwork.sh**.
 * To drop the network and remove all running docker container run **teardownFabric.sh**
+* **downloadFabric.sh** fetches all necessary docker containers.
 
 ## Configuration information
 
