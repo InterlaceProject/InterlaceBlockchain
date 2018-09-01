@@ -18,4 +18,4 @@ export CAUTH=ca.sardex.sardex.net
 export PRIVATE_KEY="${DIR}"/composer/crypto-config/peerOrganizations/sardex.sardex.net/users/Admin@sardex.sardex.net/msp/keystore/ls11f467df2881d0de9687049afe8fc55ebebe68b4a912aa3b14548f721d3d2498_sk
 export CERT="${DIR}"/composer/crypto-config/peerOrganizations/sardex.sardex.net/users/Admin@sardex.sardex.net/msp/signcerts/Admin@sardex.sardex.net-cert.pem
 
-export PEER_ADMIN_CARD=PeerAdmin@hlfv1.card
+export PEER_ADMIN_CARD=PeerAdmin@sardex-open-network.card

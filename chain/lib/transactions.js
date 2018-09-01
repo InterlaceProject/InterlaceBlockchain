@@ -23,7 +23,7 @@ async function CreditTransfer(transfer) {
 	transfer.senderAccount.balance -= transfer.amount;
 	transfer.recipientAccount.balance += transfer.amount;
 	
-    let assetRegistry = await getAssetRegistry('net.sardex.interlace.CreditTransfer');
+    let assetRegistry = await getAssetRegistry('net.sardex.interlace.CCAccount');
 
     // persist the state of the account as well as accountReceive
     await assetRegistry.update(transfer.senderAccount);

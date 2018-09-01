@@ -16,7 +16,18 @@
   "accountID": "A1",
   "unit": "SRD",
   "balance": 1000,
-  "member": "resource:net.sardex.interlace.Subscriber#MI1"
+  "member": "resource:net.sardex.interlace.Subscriber#M1"
+}
+
+{
+  "$class": "net.sardex.interlace.CCAccount",
+  "creditLimit": 0,
+  "creditLimitDate": "2018-08-30T19:11:40.212Z",
+  "availableBalance": 1000,
+  "accountID": "A2",
+  "unit": "SRD",
+  "balance": 1000,
+  "member": "resource:net.sardex.interlace.Subscriber#M2"
 }
 
 {
