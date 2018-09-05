@@ -76,15 +76,19 @@ async function initBlockchain(transfer) {
 
     let accReg = await getAssetRegistry('net.sardex.interlace.Individual');
     await accReg.addAll([m1, m2]);
-    /*
-    var account_json = {
-  "creditLimit": 0,
-  "creditLimitDate": "2018-08-30T19:11:40.212Z",
-  "availableBalance": 1000,
-  "accountID": "a1",
-  "unit": "SRD",
-  "balance": 1000,
-  "member": "resource:net.sardex.interlace.Subscriber#m1"
+
+}
+
+function temp() {
+  
+  var account_json = {
+"creditLimit": 0,
+"creditLimitDate": "2018-08-30T19:11:40.212Z",
+"availableBalance": 1000,
+"accountID": "a1",
+"unit": "SRD",
+"balance": 1000,
+"member": "resource:net.sardex.interlace.Subscriber#m1"
 }
 
 var a1 = factory.newResource(NS, 'CCAccount', {allowEmptyId: true});
@@ -96,5 +100,5 @@ a2.accountID = "a2"
 a2.member = "resource:net.sardex.interlace.Subscriber#m2"
 
 let accReg = await getAssetRegistry('net.sardex.interlace.CCAccount');
-await accReg.addAll([a1, a2]);*/
+await accReg.addAll([a1, a2]);
 }

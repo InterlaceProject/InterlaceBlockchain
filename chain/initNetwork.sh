@@ -48,14 +48,44 @@ EOF
 
 fi
 
+echo "Creating BNA file..."
 composer archive create -t dir -n .
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error creating bna."
+		exit 1
+fi
 
+echo "creating PeerAdmin@sardex-open-network card..."
 composer card create -p connection.json -u PeerAdmin -c $pem_admin_file -k $cert_admin_file -r PeerAdmin -r ChannelAdmin
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error creating PeerAdmin@sardex-open-network card"
+		exit 1
+fi
 
+echo "importing PeerAdmin@sardex-open-network card..."
 composer card import -f PeerAdmin@sardex-open-network.card
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error importing PeerAdmin@sardex-open-network card"
+		exit 1
+fi
 
+echo "installing sardex-open-network\@0.0.1.bna..."
 composer network install -c PeerAdmin@sardex-open-network -a sardex-open-network\@0.0.1.bna
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error installing sardex-open-network\@0.0.1.bna"
+		exit 1
+fi
 
+echo "starting sardex-open-network..."
 composer network start --networkName sardex-open-network --networkVersion 0.0.1 -A admin -S adminpw -c PeerAdmin@sardex-open-network
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error starting sardex-open-network"
+		exit 1
+fi
 
+echo "admin@sardex-open-network.card..."
 composer card import -f admin@sardex-open-network.card
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error ""
+		exit 1
+fi
