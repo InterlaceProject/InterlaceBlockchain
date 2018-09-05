@@ -49,7 +49,23 @@ cat << EOF > package.json
 }
 EOF
 
-composer archive create --sourceType dir --sourceName . -a sardex-open-network@${NET_VERSION}.bna
-composer network install --card PeerAdmin@sardex-open-network --archiveFile sardex-open-network@${NET_VERSION}.bna
-composer network upgrade -c PeerAdmin@sardex-open-network -n sardex-open-network -V ${NET_VERSION}
+echo "creating bna-package"
+composer archive create --sourceType dir --sourceName . -a sardex-open-network\@${NET_VERSION}.bna
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error creating bna."
+		exit 1
+fi
 
+echo "installing bna-packge"
+composer network install --card PeerAdmin@sardex-open-network --archiveFile sardex-open-network\@${NET_VERSION}.bna
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error installing bna."
+		exit 1
+fi
+
+echo "upgrading network"
+composer network upgrade -c PeerAdmin@sardex-open-network -n sardex-open-network -V ${NET_VERSION}
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error upgrading network."
+		exit 1
+fi

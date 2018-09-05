@@ -2,6 +2,8 @@ chain/network/crypto-config/
 chain/network/interlace-*
 chain/package.json
 chain/.composer
+chain/*.card
+chain/*.bna
 .composer/
 *.bna
 node_modules/

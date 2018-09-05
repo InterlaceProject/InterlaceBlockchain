@@ -4,7 +4,7 @@ namespace net.sardex.interlace
 //ABSTRACT LIBRARY
 /////////////////////////////////////////////////////////////////////
 abstract participant Member identified by memberID {
- 	o String memberID 
+ 	o String memberID
   o String[] email // e-mail
   o String[] phone // telephone number
 }
@@ -65,9 +65,13 @@ transaction DebitTransfer extends Transfer {
   o TransferLabel transferLabel default = "DebitTransfer"
 }
 
+transaction InitBlockchain {
+  //transaction initalizing the chain
+}
+
 
 /////////////////////////////////////////////////////////////////////
-// ENUMS 
+// ENUMS
 /////////////////////////////////////////////////////////////////////
 enum Unit{
   o Euro
