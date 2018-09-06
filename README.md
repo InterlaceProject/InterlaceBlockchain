@@ -15,7 +15,7 @@ Additionally it is also important to setup an development environment described 
 ```bash
 composer-playground
 ```
-    
+
 * To run fabric block chain the first time
 
 ```bash
@@ -31,7 +31,17 @@ cd chain
 ./initNetwork.sh
 ```
 
-**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain. Use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network quicker. Later the data will be inserted automatically to fill the chain with dummy/test data.
+**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain. Use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand. There is also a transaction called **InitBlockchain** available which is setting up a plain testing environment.
+
+* Shutting down
+
+Sometimes it is usefull to throw away everything and restart from scratch. To teardown fabric and remove playground remanances execute:
+
+```bash
+cd fabric
+./teardownFabric.sh
+./deletePlaygroundCards.sh
+```
 
 ## General architecture:
 
