@@ -4,8 +4,8 @@
 cert_admin_file=../fabric/composer/crypto-config/peerOrganizations/sardex.sardex.net/users/Admin@sardex.sardex.net/msp/keystore/11f467df2881d0de9687049afe8fc55ebebe68b4a912aa3b14548f721d3d2498_sk
 pem_admin_file=../fabric/composer/crypto-config/peerOrganizations/sardex.sardex.net/users/Admin@sardex.sardex.net/msp/signcerts/Admin@sardex.sardex.net-cert.pem
 
-if [ ! -f package.json ]; then  
-	
+if [ ! -f package.json ]; then
+
 #clumsy create package json
 cat << EOF > package.json
 {
@@ -59,42 +59,42 @@ echo "Creating BNA file..."
 composer archive create --sourceType dir --sourceName . -a ${TEMPDIR}/${BNA}
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error creating bna."
-		exit 1
+    exit 1
 fi
 
 echo "creating ${PA_CARD} card..."
 composer card create -p connection.json -u PeerAdmin -c ${pem_admin_file} -k ${cert_admin_file} -r PeerAdmin -r ChannelAdmin -f ${TEMPDIR}/${PA_CARD}.card
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error creating ${PA_CARD} card"
-		exit 1
+    exit 1
 fi
 
 echo "importing ${PA_CARD} card..."
 composer card import -f ${TEMPDIR}/${PA_CARD}.card
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error importing ${PA_CARD} card"
-		exit 1
+    exit 1
 fi
 
 echo "installing ${BNA}..."
 composer network install -c ${PA_CARD} -a ${TEMPDIR}/${BNA}
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error installing sardex-open-network\@0.0.1.bna"
-		exit 1
+    exit 1
 fi
 
 echo "starting ${NETWORKNAME}..."
 composer network start --networkName ${NETWORKNAME} --networkVersion ${VERSION} -A admin -S adminpw -c ${PA_CARD} -f ${TEMPDIR}/${ADM_CARD}
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error starting ${NETWORKNAME}"
-		exit 1
+    exit 1
 fi
 
 echo "importing ${ADM_CARD}..."
 composer card import -f ${TEMPDIR}/${ADM_CARD}
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error importing ${ADM_CARD}"
-		exit 1
+    exit 1
 fi
 
 echo "done."
