@@ -1,38 +1,18 @@
 namespace net.sardex.interlace
 
 /////////////////////////////////////////////////////////////////////
-//ABSTRACT LIBRARY
+// PARTICIPANTS
 /////////////////////////////////////////////////////////////////////
 abstract participant Member identified by memberID {
- 	o String memberID
+  o String memberID
   o String[] email // e-mail
   o String[] phone // telephone number
 }
 
-abstract asset Account identified by accountID {
-  o String accountID
-  o Unit unit
-  o Double balance
-  --> Member member
-}
-
-abstract asset MemberAccount extends Account {}
-
-abstract transaction Transfer {
-  o Double amount
-  // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
-  --> Account senderAccount
-  --> Account recipientAccount
-}
-
-
-/////////////////////////////////////////////////////////////////////
-// PARTICIPANTS
-/////////////////////////////////////////////////////////////////////
 participant Subscriber extends Member {
   o String entityName // Nome della societ
   o String entityAddress // Indirizzo della societ
-  /*
+  /* //temporarily commented to simplify chain-init process
   o String[] GPS // Coordinate GPS
   o String VAT // Numero IVA
   o String firstName optional // Nome
@@ -53,22 +33,22 @@ participant Individual extends Member {
   o String employedBy optional // Datore di lavoro
 }
 
-
 /////////////////////////////////////////////////////////////////////
 // TRANSACTIONS
 /////////////////////////////////////////////////////////////////////
-transaction CreditTransfer extends Transfer {
-  o TransferLabel transferLabel default = "CreditTransfer"
+abstract transaction Transfer {
+  o Double amount
+  // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
+  --> Account senderAccount
+  --> Account recipientAccount
 }
 
-transaction DebitTransfer extends Transfer {
-  o TransferLabel transferLabel default = "DebitTransfer"
-}
+transaction CreditTransfer extends Transfer {}
 
-transaction InitBlockchain {
-  //transaction initalizing the chain
-}
+transaction DebitTransfer extends Transfer {}
 
+//transaction initalizing the chain
+transaction InitBlockchain {}
 
 /////////////////////////////////////////////////////////////////////
 // ENUMS
@@ -78,15 +58,18 @@ enum Unit{
   o SRD
 }
 
-enum TransferLabel {
-  o CreditTransfer
-  o DebitTransfer
-}
-
-
 /////////////////////////////////////////////////////////////////////
 //ASSETS
 /////////////////////////////////////////////////////////////////////
+abstract asset Account identified by accountID {
+  o String accountID
+  o Unit unit
+  o Double balance
+  --> Member member
+}
+
+abstract asset MemberAccount extends Account {}
+
 asset SysAccount extends Account {}
 
 asset CCAccount extends MemberAccount {
