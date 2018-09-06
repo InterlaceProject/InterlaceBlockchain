@@ -51,30 +51,32 @@ async function DebitTransfer(transfer) {
 async function initBlockchain(transfer) {
     var factory = getFactory();
     var NS = 'net.sardex.interlace';
-    var ind_json1 = {
-      "firstName": "f1",
-      "surName": "s1",
-      "employedBy": "ab",
-      "memberID": "m1",
-      "email": ["f1@mail.com"],
-      "phone": ["0815"]
-    }
 
-    var ind_json2 = {
-      "firstName": "f2",
-      "surName": "s2",
-      "employedBy": "cd",
-      "memberID": "m2",
-      "email": ["f2@mail.com"],
-      "phone": ["4711"]
-    }
+    var m1 = factory.newResource(NS, 'Individual', 'm1');
+    m1.firstName="f1";
+    m1.surName="s1";
+    m1.employedBy="ab";
+    m1.email=["f1@mail.com"];
+    m1.phone=["0815"];
 
-    var m1 = factory.newResource(NS, 'Individual', {allowEmptyId: true});
-    Object.assign(m1, ind_json);
-    var m2 = factory.newResource(NS, 'Individual', {allowEmptyId: true});
-    Object.assign(m2, ind_json);
+    var m2 = factory.newResource(NS, 'Individual', 'm2');
+    m2.firstName="f2";
+    m2.surName="s2";
+    m2.employedBy="ab";
+    m2.email=["f2@mail.com"];
+    m2.phone=["4711"];
 
-    let accReg = await getAssetRegistry('net.sardex.interlace.Individual');
-    await accReg.addAll([m1, m2]);
+    var a1 = factory.newResource(NS, 'CCAccount', 'a1');
+    a1.creditLimit=0;
+    a1.creditLimitDate="2018-08-30T19:11:40.212Z";
+    a1.availableBalance=1000;
+    a1.unit=SRD;
+    a1.balance=1000;
+    a1.member=factory.newRelationship(NS, 'Individual', 'm1');
 
+    let partReg = await getParticipantRegistry(NS + '.Individual');
+    await partReg.addAll([m1, m2]);
+
+    let accReg = await getAssetRegistry(NS + '.CCAccount');
+    await accReg.addAll([a1]);
 }

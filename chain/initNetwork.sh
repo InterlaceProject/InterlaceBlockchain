@@ -63,7 +63,7 @@ if ! [ $? -eq 0 ]; then
 fi
 
 echo "creating ${PA_CARD} card..."
-composer card create -p connection.json -u PeerAdmin -c $pem_admin_file -k $cert_admin_file -r PeerAdmin -r ChannelAdmin -f ${TEMPDIR}/${PA_CARD}.card
+composer card create -p connection.json -u PeerAdmin -c ${pem_admin_file} -k ${cert_admin_file} -r PeerAdmin -r ChannelAdmin -f ${TEMPDIR}/${PA_CARD}.card
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error creating ${PA_CARD} card"
 		exit 1
@@ -76,23 +76,25 @@ if ! [ $? -eq 0 ]; then
 		exit 1
 fi
 
-echo "installing sardex-open-network\@0.0.1.bna..."
+echo "installing ${BNA}..."
 composer network install -c ${PA_CARD} -a ${TEMPDIR}/${BNA}
 if ! [ $? -eq 0 ]; then
     >&2 echo "Error installing sardex-open-network\@0.0.1.bna"
 		exit 1
 fi
 
-echo "starting sardex-open-network..."
-composer network start --networkName ${NETWORKNAME} --networkVersion ${VERSION} -A admin -S adminpw -c ${PA_CARD}
+echo "starting ${NETWORKNAME}..."
+composer network start --networkName ${NETWORKNAME} --networkVersion ${VERSION} -A admin -S adminpw -c ${PA_CARD} -f ${TEMPDIR}/${ADM_CARD}
 if ! [ $? -eq 0 ]; then
-    >&2 echo "Error starting sardex-open-network"
+    >&2 echo "Error starting ${NETWORKNAME}"
 		exit 1
 fi
 
 echo "importing ${ADM_CARD}..."
-composer card import -f ${ADM_CARD}
+composer card import -f ${TEMPDIR}/${ADM_CARD}
 if ! [ $? -eq 0 ]; then
-    >&2 echo "Error ""
+    >&2 echo "Error importing ${ADM_CARD}"
 		exit 1
 fi
+
+echo "done."
