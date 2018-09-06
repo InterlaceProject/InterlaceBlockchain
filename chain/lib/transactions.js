@@ -68,15 +68,23 @@ async function initBlockchain(transfer) {
 
     var a1 = factory.newResource(NS, 'CCAccount', 'a1');
     a1.creditLimit=0;
-    a1.creditLimitDate="2018-08-30T19:11:40.212Z";
+    a1.creditLimitDate=new Date("2018-08-30T19:11:40.212Z");
     a1.availableBalance=1000;
-    a1.unit=SRD;
+    a1.unit="SRD";
     a1.balance=1000;
     a1.member=factory.newRelationship(NS, 'Individual', 'm1');
+
+    var a2 = factory.newResource(NS, 'CCAccount', 'a2');
+    a2.creditLimit=0;
+    a2.creditLimitDate=new Date("2018-08-30T19:11:40.212Z");
+    a2.availableBalance=1000;
+    a2.unit="SRD";
+    a2.balance=1000;
+    a2.member=factory.newRelationship(NS, 'Individual', 'm2');
 
     let partReg = await getParticipantRegistry(NS + '.Individual');
     await partReg.addAll([m1, m2]);
 
     let accReg = await getAssetRegistry(NS + '.CCAccount');
-    await accReg.addAll([a1]);
+    await accReg.addAll([a1, a2]);
 }
