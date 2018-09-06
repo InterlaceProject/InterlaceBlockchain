@@ -9,6 +9,11 @@ then
 	exit 1
 fi
 
+TEMPDIR=$(mktemp -d)
+NETWORKNAME="sardex-open-network"
+PA_CARD="PeerAdmin@${NETWORKNAME}"
+BNA="${NETWORKNAME}@${NET_VERSION}.bna"
+
 #clumsy version rewrite
 cat << EOF > package.json
 {
@@ -48,11 +53,6 @@ cat << EOF > package.json
   }
 }
 EOF
-
-TEMPDIR=$(mktemp -d)
-PA_CARD="PeerAdmin@sardex-open-network"
-NETWORKNAME="sardex-open-network"
-BNA="${NETWORKNAME}@${NET_VERSION}.bna"
 
 echo "creating bna-package ${BNA}..."
 composer archive create --sourceType dir --sourceName . -a ${TEMPDIR}/${BNA}
