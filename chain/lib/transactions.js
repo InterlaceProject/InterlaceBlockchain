@@ -1,4 +1,65 @@
-var enums = require("./enums");
+"use strict";
+
+var Unit = Object.freeze({
+  "Euro": "Euro",
+  "SRD": "SRD"
+});
+
+var GroupType = Object.freeze ({
+  "welcome": "welcome",
+  "retail": "retail",
+  "company": "company",
+  "full": "full",
+  "employee": "employee",
+  "on_hold": "on_hold",
+  "MNGR": "MNGR",
+  "consumer": "consumer",
+  "consumer_verified": "consumer_verified"
+});
+
+var Operation = Object.freeze ({
+  "Credit": "Credit",
+  "Debit": "Debit"
+});
+
+var ttTree = {
+  credit: {
+    SRD: {
+      company: ["company", "employee", "MNGR", "full"],
+      full: ["company", "employee", "MNGR", "full"],
+      MNGR: ["retail", "company", "employee", "MNGR", "full"],
+      employee: ["retail", "company", "full"],
+      consumer_verified: ["retail", "company", "full"]
+    }
+  },
+  debit: {
+    SRD: {
+      "retail": "retail",
+      "company": "company",
+      "full": "full",
+      "MNGR": "MNGR"
+    },
+    EUR: {
+      "retail": "retail",
+      "full": "full"
+    }
+  }
+}
+
+/**
+ * Helper Function get back transfer type or null if undefined
+ */
+function tt(operation, unit, group) {
+  if (ttTree[operation] !== undefined)
+    if (ttTree[operation][unit] !== undefined)
+      if (ttTree[operation][unit][group] !== undefined)
+        return ttTree[operation][unit][group];
+
+  return null;
+}
+
+var namespace = 'net.sardex.interlace';
+var NS = namespace;
 
  /**
  * CreditTransfer transaction
@@ -46,7 +107,6 @@ async function DebitTransfer(transfer) {
  */
 async function initBlockchain(transfer) {
     var factory = getFactory();
-    var NS = 'net.sardex.interlace';
 
     var m1 = factory.newResource(NS, 'Individual', 'm1');
     m1.firstName="f1";
@@ -54,6 +114,7 @@ async function initBlockchain(transfer) {
     m1.employedBy="ab";
     m1.email=["f1@mail.com"];
     m1.phone=["0815"];
+    m1.activeGroup=GroupType.company;
 
     var m2 = factory.newResource(NS, 'Individual', 'm2');
     m2.firstName="f2";
@@ -61,6 +122,7 @@ async function initBlockchain(transfer) {
     m2.employedBy="ab";
     m2.email=["f2@mail.com"];
     m2.phone=["4711"];
+    m2.activeGroup=GroupType.company;
 
     var a1 = factory.newResource(NS, 'CCAccount', 'a1');
     a1.creditLimit=0;
@@ -85,6 +147,27 @@ async function initBlockchain(transfer) {
     await accReg.addAll([a1, a2]);
 }
 
-async function PreviewCheck(member, fromAccount, toAccount, fromGrpId, toGrpId, operation) {
+/**
+ * PreviewCheck as of D3.1 => ASIMSpec
+ * throws "Error" on checking issue
+ * @param {net.sardex.interlace.Member} member
+ * @param {net.sardex.interlace.Account} fromAccount
+ * @param {net.sardex.interlace.Account} toAccount
+ * @param {net.sardex.interlace.GroupType} fromGrp
+ * @param {net.sardex.interlace.GroupType} toGrp
+ * @param {net.sardex.interlace.Operation} operation
+ * // TODO: implement
+ */
+async function PreviewCheck(member, fromAccount, toAccount, fromGrp, toGrp, operation) {
+  if (fromAccount.unit != toAccount.unit) {
+    throw new Error("Units do not match");
+  }
+  if (member.memberID != fromAccount.member.memberID) {
+    throw new Error("Member not account owner");
+  }
 
+  //TODO: tasfer tpye checking
+  //TODO: account connectivity checking
+
+  // no error => ok
 }

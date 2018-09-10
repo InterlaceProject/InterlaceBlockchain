@@ -7,6 +7,7 @@ abstract participant Member identified by memberID {
   o String memberID
   o String[] email // e-mail
   o String[] phone // telephone number
+  o GroupType activeGroup // set current group membership type
 }
 
 participant Subscriber extends Member {
@@ -20,8 +21,8 @@ participant Subscriber extends Member {
   o Double capacity optional // Disponibilit commerciale
   o DateTime capacityDate optional // Data  Disponibilit commerciale
   o Double availableCapacity optional // Disponibilit commerciale residua
-  o Double rewardRate optional // rate of reward to consumer, in SRD
-  o Double[] euroFee optional // fee on B2C EUR sales, in EUR
+  o Double rewardRate optional // rate of reward to consumer in SRD
+  o Double[] euroFee optional // fee on B2C EUR sales in EUR
   o Double acceptanceRate optional // Rate of SRD acceptance in consumer purchases
   o Double creditPercent optional // SRD acceptance for transactions above 1000
   */
@@ -53,9 +54,26 @@ transaction InitBlockchain {}
 /////////////////////////////////////////////////////////////////////
 // ENUMS !! should be in synch with enum.js !!
 /////////////////////////////////////////////////////////////////////
-enum Unit{
+enum Unit {
   o Euro
   o SRD
+}
+
+enum Operation {
+  o Credit
+  o Debit
+}
+
+enum GroupType {
+  o welcome
+  o retail
+  o company
+  o full
+  o employee
+  o on_hold
+  o MNGR
+  o consumer
+  o consumer_verified
 }
 
 /////////////////////////////////////////////////////////////////////
