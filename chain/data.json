@@ -3,9 +3,9 @@
   "transferLabel": "CreditTransfer",
   "amount": 200,
   "senderAccount":
-  	"resource:net.sardex.interlace.CCAccount#A1",
+  	"resource:net.sardex.interlace.CCAccount#a1",
   "recipientAccount":
-  	"resource:net.sardex.interlace.CCAccount#A2"
+  	"resource:net.sardex.interlace.CCAccount#a2"
 }
 
 {
@@ -13,10 +13,10 @@
   "creditLimit": 0,
   "creditLimitDate": "2018-08-30T19:11:40.212Z",
   "availableBalance": 1000,
-  "accountID": "A1",
+  "accountID": "a1",
   "unit": "SRD",
   "balance": 1000,
-  "member": "resource:net.sardex.interlace.Subscriber#M1"
+  "member": "resource:net.sardex.interlace.Subscriber#m1"
 }
 
 {
@@ -24,10 +24,10 @@
   "creditLimit": 0,
   "creditLimitDate": "2018-08-30T19:11:40.212Z",
   "availableBalance": 1000,
-  "accountID": "A2",
+  "accountID": "a2",
   "unit": "SRD",
   "balance": 1000,
-  "member": "resource:net.sardex.interlace.Subscriber#M2"
+  "member": "resource:net.sardex.interlace.Subscriber#m2"
 }
 
 {
@@ -35,7 +35,7 @@
   "firstName": "f1",
   "surName": "s1",
   "employedBy": "ab",
-  "memberID": "M1",
+  "memberID": "m1",
   "email": ["mail@mail.com"],
   "phone": ["0815"]
 }
@@ -45,7 +45,7 @@
   "firstName": "f2",
   "surName": "s2",
   "employedBy": "cd",
-  "memberID": "M2",
+  "memberID": "m2",
   "email": ["mail1@mail.com"],
   "phone": ["4711"]
 }

@@ -9,6 +9,11 @@ then
 	exit 1
 fi
 
+TEMPDIR=$(mktemp -d)
+NETWORKNAME="sardex-open-network"
+PA_CARD="PeerAdmin@${NETWORKNAME}"
+BNA="${NETWORKNAME}@${NET_VERSION}.bna"
+
 #clumsy version rewrite
 cat << EOF > package.json
 {
@@ -49,7 +54,23 @@ cat << EOF > package.json
 }
 EOF
 
-composer archive create --sourceType dir --sourceName . -a sardex-open-network@${NET_VERSION}.bna
-composer network install --card PeerAdmin@sardex-open-network --archiveFile sardex-open-network@${NET_VERSION}.bna
-composer network upgrade -c PeerAdmin@sardex-open-network -n sardex-open-network -V ${NET_VERSION}
+echo "creating bna-package ${BNA}..."
+composer archive create --sourceType dir --sourceName . -a ${TEMPDIR}/${BNA}
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error creating bna."
+		exit 1
+fi
 
+echo "installing bna-packge ${BNA}..."
+composer network install --card ${PA_CARD} --archiveFile ${TEMPDIR}/${BNA}
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error installing bna."
+		exit 1
+fi
+
+echo "upgrading network ${NETWORKNAME} ..."
+composer network upgrade --card ${PA_CARD} -n ${NETWORKNAME} -V ${NET_VERSION}
+if ! [ $? -eq 0 ]; then
+    >&2 echo "Error upgrading network."
+		exit 1
+fi
