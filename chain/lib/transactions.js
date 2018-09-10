@@ -1,3 +1,5 @@
+var enums = require("./enums");
+
  /**
  * CreditTransfer transaction
  * @param {net.sardex.interlace.CreditTransfer} transfer
@@ -81,4 +83,8 @@ async function initBlockchain(transfer) {
 
     let accReg = await getAssetRegistry(NS + '.CCAccount');
     await accReg.addAll([a1, a2]);
+}
+
+async function PreviewCheck(member, fromAccount, toAccount, fromGrpId, toGrpId, operation) {
+
 }

@@ -2,7 +2,7 @@
 # Grab the current directory
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-export FABRIC_START_TIMEOUT=15
+export FABRIC_START_TIMEOUT=20
 export CHANNELID=interlacechannel
 export CHANNELTX=interlace-channel.tx
 export CHANNELBLOCK=${CHANNELID}.block
