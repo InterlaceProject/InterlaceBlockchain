@@ -6,7 +6,7 @@ This is the Interlace blockchain implementation based on the specifications crea
 
 First it is necessary to install the pre-Requisites which can be found [here](https://hyperledger.github.io/composer/latest/installing/installing-prereqs.html) and are available for Linux and Mac OS. Currently these are the recommended operating systems, however, with additional effort it might be possible to run the INTERLACE blockchain on Windows.
 
-Additionally it is also important to setup an development environment described at the [composer github repository](https://hyperledger.github.io/composer/latest/installing/development-tools.html). If you do not want to set up the complete environment it would be still required to install at least playground in order to let the scripts run properly.
+Additionally it is also important to setup a development environment described at the [composer github repository](https://hyperledger.github.io/composer/latest/installing/development-tools.html). If you do not want to set up the complete environment it would still be required to install at least Playground in order to let the scripts run properly.
 
 ## Execution
 
@@ -33,11 +33,11 @@ cd chain
 ./initNetwork.sh # use hyperledger composer to create a business network and deploy it
 ```
 
-**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain. Use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand. There is also a transaction called **InitBlockchain** available which is setting up a plain testing environment.
+**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain. Use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand. There is also a transaction called **InitBlockchain** available which sets up a plain testing environment.
 
 ### Shutting down
 
-Sometimes it is useful to throw away everything and restart from scratch. To teardown fabric and remove playground remanences execute:
+Sometimes it is useful to throw away everything and restart from scratch. To teardown fabric and remove playground left-overs execute:
 
 ```bash
 cd fabric
