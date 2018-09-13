@@ -76,6 +76,16 @@ enum GroupType {
   o consumer_verified
 }
 
+enum  AccountType {
+  o CC
+  o DOMU
+  o MIRROR
+  o Income
+  o Prepaid
+  o Bisoo
+  o Topup
+}
+
 /////////////////////////////////////////////////////////////////////
 //ASSETS
 /////////////////////////////////////////////////////////////////////
@@ -83,6 +93,7 @@ abstract asset Account identified by accountID {
   o String accountID
   o Unit unit
   o Double balance
+  o AccountType accountType
   --> Member member
 }
 

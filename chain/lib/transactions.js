@@ -22,6 +22,34 @@ var Operation = Object.freeze ({
   "Debit": "Debit"
 });
 
+var AccountType = Object.freeze({
+  "CC":"CC",
+  "DOMU": "DOMU",
+  "MIRROR": "MIRROR",
+  "Income": "Income",
+  "Prepaid": "Prepaid",
+  "Bisoo": "Bisoo",
+  "Topup": "Topup"
+});
+
+var accTTree = {
+  credit: {
+    SRD: {
+      "CC": ["CC", "DOMU", "MIRROR"],
+      "DOMU": ["CC"],
+      "MIRROR" : ["CC"]
+    }
+  },
+  debit: {
+    SRD: {
+      "CC": ["CC"]
+    },
+    EUR: {
+      "Income": ["Bisoo"]
+    }
+  }
+}
+
 var ttTree = {
   credit: {
     SRD: {
@@ -47,13 +75,27 @@ var ttTree = {
 }
 
 /**
- * Helper Function get back transfer type or null if undefined
+ * get back transfer type or null if undefined
  */
-function tt(operation, unit, group) {
-  if (ttTree[operation] !== undefined)
-    if (ttTree[operation][unit] !== undefined)
-      if (ttTree[operation][unit][group] !== undefined)
-        return ttTree[operation][unit][group];
+function tt(operation, unit, memberGroup) {
+  return treeSearch(operation, unit, memberGroup, ttTree);
+}
+
+/**
+ * get back account connectivity or null if undefined
+ */
+function accT(operation, unit, accountType) {
+  return treeSearch(operation, unit, accountType, accTTree);
+}
+
+/**
+ * Helper Function for tt and accT
+ */
+function treeSearch(p1, p2, p3, tree) {
+  if (tree[p1] !== undefined)
+    if (tree[p1][p2] !== undefined)
+      if (tree[p1][p2][p3] !== undefined)
+        return tree[p1][p2][p3];
 
   return null;
 }
@@ -130,6 +172,7 @@ async function initBlockchain(transfer) {
     a1.availableBalance=1000;
     a1.unit="SRD";
     a1.balance=1000;
+    a1.accountType=AccountType.CC;
     a1.member=factory.newRelationship(NS, 'Individual', 'm1');
 
     var a2 = factory.newResource(NS, 'CCAccount', 'a2');
@@ -138,6 +181,7 @@ async function initBlockchain(transfer) {
     a2.availableBalance=1000;
     a2.unit="SRD";
     a2.balance=1000;
+    a2.accountType=AccountType.CC;
     a2.member=factory.newRelationship(NS, 'Individual', 'm2');
 
     let partReg = await getParticipantRegistry(NS + '.Individual');
@@ -153,21 +197,38 @@ async function initBlockchain(transfer) {
  * @param {net.sardex.interlace.Member} member
  * @param {net.sardex.interlace.Account} fromAccount
  * @param {net.sardex.interlace.Account} toAccount
- * @param {net.sardex.interlace.GroupType} fromGrp
- * @param {net.sardex.interlace.GroupType} toGrp
  * @param {net.sardex.interlace.Operation} operation
  * // TODO: implement
  */
-async function PreviewCheck(member, fromAccount, toAccount, fromGrp, toGrp, operation) {
+async function previewCheck(member, fromAccount, toAccount, operation) {
+  //check equal units
   if (fromAccount.unit != toAccount.unit) {
     throw new Error("Units do not match");
   }
+
+  //check member is owner of from account
   if (member.memberID != fromAccount.member.memberID) {
     throw new Error("Member not account owner");
   }
 
-  //TODO: tasfer tpye checking
-  //TODO: account connectivity checking
+  //determine transfer type
+  ttCheck = tt("credit", fromAccount.unit, fromAccount.member.activeGroup);
+
+  if (ttCheck === null) { //like MayStartCredit/DebitOpns
+    throw new Error("Member: " + member.memberID + " in group " +  fromAccount.member.activeGroup + " does not have the right privilegedes for that transfer"); //SourceGroupViolation
+
+  } else if (ttCheck.indexOf(toAccount.memeber.activeGroup) > -1)) { // check for valid group membership
+
+    //determine connectivity information
+    accTCheck = accT("credit", fromAccount.unit, fromAccount.accountType);
+
+    if (accTCheck === null) { //like SourceAccountViolation
+      throw new Error("Aource account " + fromAccount.accountID + " not of the correct type");
+
+    } else if (accTCheck.indexOf(toAccount.accountType) <= -1) { //check for valid account type
+      throw new Error("Account " + fromAccount.accountID + " is not in one of these groups " + accTCheck);
+    }
+  }
 
   // no error => ok
 }
