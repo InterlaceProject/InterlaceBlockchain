@@ -4,18 +4,21 @@
     "version": "1.0.0",
     "peers": {
         "peer0.sardex.sardex.net": {
-            "url": "grpc://localhost:7051"
+            "url": "grpc://localhost:7051",
+            "eventUrl": "grpc://localhost:7051"
         }
     },
     "certificateAuthorities": {
         "ca.sardex.sardex.net": {
             "url": "http://localhost:7054",
+            "eventUrl": "http://localhost:7054",
             "caName": "ca.sardex.sardex.net"
         }
     },
     "orderers": {
         "orderer.sardex.net": {
-            "url": "grpc://localhost:7050"
+            "url": "grpc://localhost:7050",
+            "eventUrl": "grpc://localhost:7050"
         }
     },
     "organizations": {
