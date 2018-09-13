@@ -245,7 +245,6 @@ async function previewCheck(member, fromAccount, toAccount, operation) {
  * @param {net.sardex.interlace.Account} fromAccount
  * @param {net.sardex.interlace.Account} toAccount
  * @param {Double} amount
- * // TODO: implement
  */
 async function accountLimitCheck(fromAccount, toAccount, amount) {
   if canBeSpentBy(fromAccount, amount) {
@@ -261,15 +260,30 @@ async function accountLimitCheck(fromAccount, toAccount, amount) {
   }
 }
 
-function canBeSpentBy(fromAccount, amount) {
-  return fromAccount.availableBalance >= amount;
+/**
+ * canBeSpentBy as of D3.1 => ASIMSpec
+ * @param {net.sardex.interlace.Account} account
+ * @param {Double} amount
+ */
+function canBeSpentBy(account, amount) {
+  return account.availableBalance >= amount;
 }
-function canBeCashedBy(toAccount, amount) {
-	return toAccount.accountType != AccountType.DOMU &&
-          (toAccount.balance + amount) <= toAccount.upperLimit; //TODO: add upperLimit
+/**
+ * canBeCashedBy as of D3.1 => ASIMSpec
+ * @param {net.sardex.interlace.Account} account
+ * @param {Double} amount
+ */
+function canBeCashedBy(account, amount) {
+	return account.accountType != AccountType.DOMU &&
+          (account.balance + amount) <= account.upperLimit;
 }
-function hasSellCapacityFor(toAcc, amount) {
-	return amount <= toAcc.member.availableCapacity;
+/**
+ * hasSellCapacityFor as of D3.1 => ASIMSpec
+ * @param {net.sardex.interlace.Account} account
+ * @param {Double} amount
+ */
+function hasSellCapacityFor(account, amount) {
+	return amount <= account.member.availableCapacity;
 }
 
 /**
