@@ -1,78 +1,78 @@
-"use strict";
+'use strict';
 
 var Unit = Object.freeze({
-  "Euro": "Euro",
-  "SRD": "SRD"
+  'Euro': 'Euro',
+  'SRD': 'SRD'
 });
 
 var GroupType = Object.freeze ({
-  "welcome": "welcome",
-  "retail": "retail",
-  "company": "company",
-  "full": "full",
-  "employee": "employee",
-  "on_hold": "on_hold",
-  "MNGR": "MNGR",
-  "consumer": "consumer",
-  "consumer_verified": "consumer_verified"
+  'welcome': 'welcome',
+  'retail': 'retail',
+  'company': 'company',
+  'full': 'full',
+  'employee': 'employee',
+  'on_hold': 'on_hold',
+  'MNGR': 'MNGR',
+  'consumer': 'consumer',
+  'consumer_verified': 'consumer_verified'
 });
 
 var Operation = Object.freeze ({
-  "Credit": "Credit",
-  "Debit": "Debit"
+  'Credit': 'Credit',
+  'Debit': 'Debit'
 });
 
 var AccountType = Object.freeze({
-  "CC":"CC",
-  "DOMU": "DOMU",
-  "MIRROR": "MIRROR",
-  "Income": "Income",
-  "Prepaid": "Prepaid",
-  "Bisoo": "Bisoo",
-  "Topup": "Topup"
+  'CC':'CC',
+  'DOMU': 'DOMU',
+  'MIRROR': 'MIRROR',
+  'Income': 'Income',
+  'Prepaid': 'Prepaid',
+  'Bisoo': 'Bisoo',
+  'Topup': 'Topup'
 });
 
 var accTTree = {
   credit: {
     SRD: {
-      "CC": ["CC", "DOMU", "MIRROR"],
-      "DOMU": ["CC"],
-      "MIRROR" : ["CC"]
+      'CC': ['CC', 'DOMU', 'MIRROR'],
+      'DOMU': ['CC'],
+      'MIRROR' : ['CC']
     }
   },
   debit: {
     SRD: {
-      "CC": ["CC"]
+      'CC': ['CC']
     },
     EUR: {
-      "Income": ["Bisoo"]
+      'Income': ['Bisoo']
     }
   }
-}
+};
 
 var ttTree = {
   credit: {
     SRD: {
-      company: ["company", "employee", "MNGR", "full"],
-      full: ["company", "employee", "MNGR", "full"],
-      MNGR: ["retail", "company", "employee", "MNGR", "full"],
-      employee: ["retail", "company", "full"],
-      consumer_verified: ["retail", "company", "full"]
+      company: ['company', 'employee', 'MNGR', 'full'],
+      full: ['company', 'employee', 'MNGR', 'full'],
+      MNGR: ['retail', 'company', 'employee', 'MNGR', 'full'],
+      employee: ['retail', 'company', 'full'],
+      consumer_verified: ['retail', 'company', 'full']
     }
   },
   debit: {
     SRD: {
-      "retail": "retail",
-      "company": "company",
-      "full": "full",
-      "MNGR": "MNGR"
+      'retail': 'retail',
+      'company': 'company',
+      'full': 'full',
+      'MNGR': 'MNGR'
     },
     EUR: {
-      "retail": "retail",
-      "full": "full"
+      'retail': 'retail',
+      'full': 'full'
     }
   }
-}
+};
 
 /**
  * get back transfer type or null if undefined
@@ -92,10 +92,13 @@ function accT(operation, unit, accountType) {
  * Helper Function for tt and accT
  */
 function treeSearch(p1, p2, p3, tree) {
-  if (tree[p1] !== undefined)
-    if (tree[p1][p2] !== undefined)
-      if (tree[p1][p2][p3] !== undefined)
+  if (tree[p1] !== undefined) {
+    if (tree[p1][p2] !== undefined) {
+      if (tree[p1][p2][p3] !== undefined) {
         return tree[p1][p2][p3];
+      }
+    }
+  }
 
   return null;
 }
@@ -103,7 +106,7 @@ function treeSearch(p1, p2, p3, tree) {
 var namespace = 'net.sardex.interlace';
 var NS = namespace;
 
- /**
+/**
  * CreditTransfer transaction
  * @param {net.sardex.interlace.CreditTransfer} transfer
  * @transaction
@@ -111,11 +114,11 @@ var NS = namespace;
 async function CreditTransfer(transfer) {
   //some error checking
   if (transfer.amount <= 0) {
-    throw new Error("Transfer amount must be a positive value.");
+    throw new Error('Transfer amount must be a positive value.');
   }
   if (transfer.senderAccount.balance < transfer.amount) {
-    throw new Error("Transfer amount " + transfer.amount +
-    " is bigger than the available balance of " + transfer.senderAccount.balance);
+    throw new Error('Transfer amount ' + transfer.amount +
+    ' is bigger than the available balance of ' + transfer.senderAccount.balance);
   }
 
   //move money
@@ -135,11 +138,7 @@ async function CreditTransfer(transfer) {
  * @transaction
  */
 async function DebitTransfer(transfer) {
-  //some error checking
-  if (transfer.transferLabel != TransferLabel_DebitTransfer) {
-    throw new Error("Wrong transfer label");
-  }
-  throw new Error("not implemented");
+  throw new Error('not implemented');
 }
 
 /**
@@ -148,56 +147,56 @@ async function DebitTransfer(transfer) {
  * @transaction
  */
 async function initBlockchain(transfer) {
-    var factory = getFactory();
+  var factory = getFactory();
 
-    var m1 = factory.newResource(NS, 'Individual', 'm1');
-    m1.firstName="f1";
-    m1.surName="s1";
-    m1.employedBy="ab";
-    m1.email=["f1@mail.com"];
-    m1.phone=["0815"];
-    m1.activeGroup=GroupType.company;
-    m1.availableCapacity=1000000;
+  var m1 = factory.newResource(NS, 'Individual', 'm1');
+  m1.firstName='f1';
+  m1.surName='s1';
+  m1.employedBy='ab';
+  m1.email=['f1@mail.com'];
+  m1.phone=['0815'];
+  m1.activeGroup=GroupType.company;
+  m1.availableCapacity=1000000;
 
-    var m2 = factory.newResource(NS, 'Individual', 'm2');
-    m2.firstName="f2";
-    m2.surName="s2";
-    m2.employedBy="ab";
-    m2.email=["f2@mail.com"];
-    m2.phone=["4711"];
-    m2.activeGroup=GroupType.company;
-    m2.availableCapacity=1000000;
+  var m2 = factory.newResource(NS, 'Individual', 'm2');
+  m2.firstName='f2';
+  m2.surName='s2';
+  m2.employedBy='ab';
+  m2.email=['f2@mail.com'];
+  m2.phone=['4711'];
+  m2.activeGroup=GroupType.company;
+  m2.availableCapacity=1000000;
 
-    var a1 = factory.newResource(NS, 'CCAccount', 'a1');
-    a1.creditLimit=0;
-    a1.creditLimitDate=new Date("2018-08-30T19:11:40.212Z");
-    a1.availableBalance=1000;
-    a1.unit="SRD";
-    a1.balance=1000;
-    a1.accountType=AccountType.CC;
-    a1.member=factory.newRelationship(NS, 'Individual', 'm1');
-    a1.upperLimit=1000000
+  var a1 = factory.newResource(NS, 'CCAccount', 'a1');
+  a1.creditLimit=0;
+  a1.creditLimitDate=new Date('2018-08-30T19:11:40.212Z');
+  a1.availableBalance=1000;
+  a1.unit='SRD';
+  a1.balance=1000;
+  a1.accountType=AccountType.CC;
+  a1.member=factory.newRelationship(NS, 'Individual', 'm1');
+  a1.upperLimit=1000000;
 
-    var a2 = factory.newResource(NS, 'CCAccount', 'a2');
-    a2.creditLimit=0;
-    a2.creditLimitDate=new Date("2018-08-30T19:11:40.212Z");
-    a2.availableBalance=1000;
-    a2.unit="SRD";
-    a2.balance=1000;
-    a2.accountType=AccountType.CC;
-    a2.member=factory.newRelationship(NS, 'Individual', 'm2');
-    a2.upperLimit=1000000
+  var a2 = factory.newResource(NS, 'CCAccount', 'a2');
+  a2.creditLimit=0;
+  a2.creditLimitDate=new Date('2018-08-30T19:11:40.212Z');
+  a2.availableBalance=1000;
+  a2.unit='SRD';
+  a2.balance=1000;
+  a2.accountType=AccountType.CC;
+  a2.member=factory.newRelationship(NS, 'Individual', 'm2');
+  a2.upperLimit=1000000;
 
-    let partReg = await getParticipantRegistry(NS + '.Individual');
-    await partReg.addAll([m1, m2]);
+  let partReg = await getParticipantRegistry(NS + '.Individual');
+  await partReg.addAll([m1, m2]);
 
-    let accReg = await getAssetRegistry(NS + '.CCAccount');
-    await accReg.addAll([a1, a2]);
+  let accReg = await getAssetRegistry(NS + '.CCAccount');
+  await accReg.addAll([a1, a2]);
 }
 
 /**
  * PreviewCheck as of D3.1 => ASIMSpec
- * throws "Error" on checking issue
+ * throws 'Error' on checking issue
  * @param {net.sardex.interlace.Member} member
  * @param {net.sardex.interlace.Account} fromAccount
  * @param {net.sardex.interlace.Account} toAccount
@@ -205,34 +204,34 @@ async function initBlockchain(transfer) {
  */
 async function previewCheck(member, fromAccount, toAccount, operation) {
   //check equal units
-  if (fromAccount.unit != toAccount.unit) {
-    throw new Error("Units do not match");
+  if (fromAccount.unit !== toAccount.unit) {
+    throw new Error('Units do not match');
   }
 
   //check if member is owner of from account
-  if (member.memberID != fromAccount.member.memberID) {
-    throw new Error("Member not account owner");
+  if (member.memberID !== fromAccount.member.memberID) {
+    throw new Error('Member not account owner');
   }
 
   //determine transfer type
-  ttCheck = tt("credit", fromAccount.unit, fromAccount.member.activeGroup);
+  let ttCheck = tt('credit', fromAccount.unit, fromAccount.member.activeGroup);
 
   if (ttCheck === null) { //like MayStartCredit/DebitOpns
     //SourceGroupViolation
-    throw new Error("Member: " + member.memberID + " in group " +
-                    fromAccount.member.activeGroup +
-                    " does not have the right privilegedes for that transfer");
-
-  } else if (ttCheck.indexOf(toAccount.memeber.activeGroup) > -1)) { // check for valid group membership
+    //throw new Error('Member: ' + member.memberID + ' in group ' +
+    //                fromAccount.member.activeGroup +
+    //                ' does not have the right privilegedes for that transfer');
+    throw new Error('');
+  } else if (ttCheck.indexOf(toAccount.member.activeGroup) > -1) { // check for valid group membership
 
     //determine connectivity information
-    accTCheck = accT("credit", fromAccount.unit, fromAccount.accountType);
+    let accTCheck = accT('credit', fromAccount.unit, fromAccount.accountType);
 
     if (accTCheck === null) { //like SourceAccountViolation
-      throw new Error("Aource account " + fromAccount.accountID + " not of the correct type");
+      throw new Error('Aource account ' + fromAccount.accountID + ' not of the correct type');
 
     } else if (accTCheck.indexOf(toAccount.accountType) <= -1) { //check for valid account type
-      throw new Error("Account " + fromAccount.accountID + " is not in one of these groups " + accTCheck);
+      throw new Error('Account ' + fromAccount.accountID + ' is not in one of these groups ' + accTCheck);
     }
   }
 
@@ -241,22 +240,22 @@ async function previewCheck(member, fromAccount, toAccount, operation) {
 
 /**
  * AccountLimitCheck as of D3.1 => ASIMSpec
- * throws "Error" on checking issue - runs through otherwise
+ * throws 'Error' on checking issue - runs through otherwise
  * @param {net.sardex.interlace.Account} fromAccount
  * @param {net.sardex.interlace.Account} toAccount
  * @param {Double} amount
  */
 async function accountLimitCheck(fromAccount, toAccount, amount) {
-  if canBeSpentBy(fromAccount, amount) {
-    if canBeCashedBy(toAccount, amount) {
+  if (canBeSpentBy(fromAccount, amount)) {
+    if (canBeCashedBy(toAccount, amount)) {
       if (!hasSellCapacityFor(toAccount, amount)) {
-        throw new Error("CapacityViolation()");
+        throw new Error('CapacityViolation()');
       }
     } else {
-      throw new Error("UpperLimitViolation()");
+      throw new Error('UpperLimitViolation()');
     }
   } else {
-    throw new Error("AvailBalanceViolation()");
+    throw new Error('AvailBalanceViolation()');
   }
 }
 
@@ -274,7 +273,7 @@ function canBeSpentBy(account, amount) {
  * @param {Double} amount
  */
 function canBeCashedBy(account, amount) {
-	return account.accountType != AccountType.DOMU &&
+  return account.accountType !== AccountType.DOMU &&
           (account.balance + amount) <= account.upperLimit;
 }
 /**
@@ -283,12 +282,12 @@ function canBeCashedBy(account, amount) {
  * @param {Double} amount
  */
 function hasSellCapacityFor(account, amount) {
-	return amount <= account.member.availableCapacity;
+  return amount <= account.member.availableCapacity;
 }
 
 /**
  * CheckAccountLimitsAlerts as of D3.1 => ASIMSpec
- * throws "Error" on checking issue - runs through otherwise
+ * throws 'Error' on checking issue - runs through otherwise
  * @param {net.sardex.interlace.Account} fromAccount
  * @param {net.sardex.interlace.Account} toAccount
  * @param {Double} amount

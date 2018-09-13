@@ -103,7 +103,7 @@ asset SysAccount extends Account {}
 
 asset CCAccount extends MemberAccount {
   o Double creditLimit
-  o DateTime creditLimitDate
+  //o DateTime creditLimitDate
   o Double availableBalance
   o Double upperLimit
 }
