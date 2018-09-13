@@ -7,6 +7,7 @@ abstract participant Member identified by memberID {
   o String memberID
   o String[] email // e-mail
   o String[] phone // telephone number
+  o Double availableCapacity // Disponibilit commerciale residua
   o GroupType activeGroup // set current group membership type
 }
 
@@ -20,7 +21,6 @@ participant Subscriber extends Member {
   o String surName optional // Cognome
   o Double capacity optional // Disponibilit commerciale
   o DateTime capacityDate optional // Data  Disponibilit commerciale
-  o Double availableCapacity optional // Disponibilit commerciale residua
   o Double rewardRate optional // rate of reward to consumer in SRD
   o Double[] euroFee optional // fee on B2C EUR sales in EUR
   o Double acceptanceRate optional // Rate of SRD acceptance in consumer purchases
@@ -105,4 +105,5 @@ asset CCAccount extends MemberAccount {
   o Double creditLimit
   o DateTime creditLimitDate
   o Double availableBalance
+  o Double upperLimit
 }

@@ -157,6 +157,7 @@ async function initBlockchain(transfer) {
     m1.email=["f1@mail.com"];
     m1.phone=["0815"];
     m1.activeGroup=GroupType.company;
+    m1.availableCapacity=1000000;
 
     var m2 = factory.newResource(NS, 'Individual', 'm2');
     m2.firstName="f2";
@@ -165,6 +166,7 @@ async function initBlockchain(transfer) {
     m2.email=["f2@mail.com"];
     m2.phone=["4711"];
     m2.activeGroup=GroupType.company;
+    m2.availableCapacity=1000000;
 
     var a1 = factory.newResource(NS, 'CCAccount', 'a1');
     a1.creditLimit=0;
@@ -174,6 +176,7 @@ async function initBlockchain(transfer) {
     a1.balance=1000;
     a1.accountType=AccountType.CC;
     a1.member=factory.newRelationship(NS, 'Individual', 'm1');
+    a1.upperLimit=1000000
 
     var a2 = factory.newResource(NS, 'CCAccount', 'a2');
     a2.creditLimit=0;
@@ -183,6 +186,7 @@ async function initBlockchain(transfer) {
     a2.balance=1000;
     a2.accountType=AccountType.CC;
     a2.member=factory.newRelationship(NS, 'Individual', 'm2');
+    a2.upperLimit=1000000
 
     let partReg = await getParticipantRegistry(NS + '.Individual');
     await partReg.addAll([m1, m2]);
@@ -198,7 +202,6 @@ async function initBlockchain(transfer) {
  * @param {net.sardex.interlace.Account} fromAccount
  * @param {net.sardex.interlace.Account} toAccount
  * @param {net.sardex.interlace.Operation} operation
- * // TODO: implement
  */
 async function previewCheck(member, fromAccount, toAccount, operation) {
   //check equal units
@@ -206,7 +209,7 @@ async function previewCheck(member, fromAccount, toAccount, operation) {
     throw new Error("Units do not match");
   }
 
-  //check member is owner of from account
+  //check if member is owner of from account
   if (member.memberID != fromAccount.member.memberID) {
     throw new Error("Member not account owner");
   }
@@ -215,7 +218,10 @@ async function previewCheck(member, fromAccount, toAccount, operation) {
   ttCheck = tt("credit", fromAccount.unit, fromAccount.member.activeGroup);
 
   if (ttCheck === null) { //like MayStartCredit/DebitOpns
-    throw new Error("Member: " + member.memberID + " in group " +  fromAccount.member.activeGroup + " does not have the right privilegedes for that transfer"); //SourceGroupViolation
+    //SourceGroupViolation
+    throw new Error("Member: " + member.memberID + " in group " +
+                    fromAccount.member.activeGroup +
+                    " does not have the right privilegedes for that transfer");
 
   } else if (ttCheck.indexOf(toAccount.memeber.activeGroup) > -1)) { // check for valid group membership
 
@@ -232,3 +238,46 @@ async function previewCheck(member, fromAccount, toAccount, operation) {
 
   // no error => ok
 }
+
+/**
+ * AccountLimitCheck as of D3.1 => ASIMSpec
+ * throws "Error" on checking issue - runs through otherwise
+ * @param {net.sardex.interlace.Account} fromAccount
+ * @param {net.sardex.interlace.Account} toAccount
+ * @param {Double} amount
+ * // TODO: implement
+ */
+async function accountLimitCheck(fromAccount, toAccount, amount) {
+  if canBeSpentBy(fromAccount, amount) {
+    if canBeCashedBy(toAccount, amount) {
+      if (!hasSellCapacityFor(toAccount, amount)) {
+        throw new Error("CapacityViolation()");
+      }
+    } else {
+      throw new Error("UpperLimitViolation()");
+    }
+  } else {
+    throw new Error("AvailBalanceViolation()");
+  }
+}
+
+function canBeSpentBy(fromAccount, amount) {
+  return fromAccount.availableBalance >= amount;
+}
+function canBeCashedBy(toAccount, amount) {
+	return toAccount.accountType != AccountType.DOMU &&
+          (toAccount.balance + amount) <= toAccount.upperLimit; //TODO: add upperLimit
+}
+function hasSellCapacityFor(toAcc, amount) {
+	return amount <= toAcc.member.availableCapacity;
+}
+
+/**
+ * CheckAccountLimitsAlerts as of D3.1 => ASIMSpec
+ * throws "Error" on checking issue - runs through otherwise
+ * @param {net.sardex.interlace.Account} fromAccount
+ * @param {net.sardex.interlace.Account} toAccount
+ * @param {Double} amount
+ * // TODO: implement
+ */
+async function checkAccountLimitsAlerts(fromAccount, toAccount, amount) {/*TODO*/}
