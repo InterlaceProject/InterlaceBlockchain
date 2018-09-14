@@ -134,6 +134,7 @@ async function CreditTransfer(transfer) {
   transfer.senderAccount.balance -= transfer.amount;
   transfer.recipientAccount.balance += transfer.amount;
 
+  //TODO: handle different account types
   let assetRegistry = await getAssetRegistry('net.sardex.interlace.CCAccount');
 
   // persist the state of the account as well as accountReceive => append to ledger

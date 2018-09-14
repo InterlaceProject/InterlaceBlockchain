@@ -93,7 +93,7 @@ abstract asset Account identified by accountID {
   o String accountID
   o Unit unit
   o Double balance
-  o AccountType accountType
+  o AccountType accountType // TODO: fix inheritance issue
   --> Member member
 }
 
