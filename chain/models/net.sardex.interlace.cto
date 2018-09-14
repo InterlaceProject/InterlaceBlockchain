@@ -107,3 +107,8 @@ asset CCAccount extends MemberAccount {
   o Double availableBalance
   o Double upperLimit
 }
+
+event LimitAlert {
+  o String alertText
+  --> account
+}

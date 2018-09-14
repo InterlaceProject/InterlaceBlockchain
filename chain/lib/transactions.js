@@ -112,7 +112,7 @@ var NS = namespace;
  * @transaction
  */
 async function CreditTransfer(transfer) {
-  //some error checking
+  // some error checking
   if (transfer.amount <= 0) {
     throw new Error('Transfer amount must be a positive value.');
   }
@@ -121,13 +121,22 @@ async function CreditTransfer(transfer) {
     ' is bigger than the available balance of ' + transfer.senderAccount.balance);
   }
 
-  //move money
+  // preview check throws error in case of violation
+  previewCheck(transfer.senderAccount, transfer.recipientAccount, transfer.amount);
+
+  // account limits checks thrwos error in case of violation
+  accountLimitCheck(transfer.senderAccount, transfer.recipientAccount, transfer.amount);
+
+  // check account limits and emits event if violated
+  checkAccountLimitsAlerts(transfer.senderAccount);
+
+  // move money
   transfer.senderAccount.balance -= transfer.amount;
   transfer.recipientAccount.balance += transfer.amount;
 
   let assetRegistry = await getAssetRegistry('net.sardex.interlace.CCAccount');
 
-  // persist the state of the account as well as accountReceive
+  // persist the state of the account as well as accountReceive => append to ledger
   await assetRegistry.update(transfer.senderAccount);
   await assetRegistry.update(transfer.recipientAccount);
 }
@@ -202,15 +211,10 @@ async function initBlockchain(transfer) {
  * @param {net.sardex.interlace.Account} toAccount
  * @param {net.sardex.interlace.Operation} operation
  */
-async function previewCheck(member, fromAccount, toAccount, operation) {
+async function previewCheck(fromAccount, toAccount, operation) {
   //check equal units
   if (fromAccount.unit !== toAccount.unit) {
     throw new Error('Units do not match');
-  }
-
-  //check if member is owner of from account
-  if (member.memberID !== fromAccount.member.memberID) {
-    throw new Error('Member not account owner');
   }
 
   //determine transfer type
@@ -218,18 +222,16 @@ async function previewCheck(member, fromAccount, toAccount, operation) {
 
   if (ttCheck === null) { //like MayStartCredit/DebitOpns
     //SourceGroupViolation
-    //throw new Error('Member: ' + member.memberID + ' in group ' +
-    //                fromAccount.member.activeGroup +
-    //                ' does not have the right privilegedes for that transfer');
-    throw new Error('');
-  } else if (ttCheck.indexOf(toAccount.member.activeGroup) > -1) { // check for valid group membership
+    throw new Error('Member: ' + fromAccount.member.memberID + ' in group ' +
+                    fromAccount.member.activeGroup +
+                    ' does not have the right privilegedes for that transfer');
 
+  } else if (ttCheck.indexOf(toAccount.member.activeGroup) > -1) { // check for valid group membership
     //determine connectivity information
     let accTCheck = accT('credit', fromAccount.unit, fromAccount.accountType);
 
     if (accTCheck === null) { //like SourceAccountViolation
-      throw new Error('Aource account ' + fromAccount.accountID + ' not of the correct type');
-
+      throw new Error('Source account ' + fromAccount.accountID + ' not of the correct type');
     } else if (accTCheck.indexOf(toAccount.accountType) <= -1) { //check for valid account type
       throw new Error('Account ' + fromAccount.accountID + ' is not in one of these groups ' + accTCheck);
     }
@@ -261,6 +263,7 @@ async function accountLimitCheck(fromAccount, toAccount, amount) {
 
 /**
  * canBeSpentBy as of D3.1 => ASIMSpec
+ * returns boolean
  * @param {net.sardex.interlace.Account} account
  * @param {Double} amount
  */
@@ -269,6 +272,7 @@ function canBeSpentBy(account, amount) {
 }
 /**
  * canBeCashedBy as of D3.1 => ASIMSpec
+ * returns boolean
  * @param {net.sardex.interlace.Account} account
  * @param {Double} amount
  */
@@ -278,6 +282,7 @@ function canBeCashedBy(account, amount) {
 }
 /**
  * hasSellCapacityFor as of D3.1 => ASIMSpec
+ * returns boolean
  * @param {net.sardex.interlace.Account} account
  * @param {Double} amount
  */
@@ -287,10 +292,8 @@ function hasSellCapacityFor(account, amount) {
 
 /**
  * CheckAccountLimitsAlerts as of D3.1 => ASIMSpec
- * throws 'Error' on checking issue - runs through otherwise
- * @param {net.sardex.interlace.Account} fromAccount
- * @param {net.sardex.interlace.Account} toAccount
- * @param {Double} amount
+ * emits event LimitAlert if applicable
+ * @param {net.sardex.interlace.Account} account account (carries member information)
  * // TODO: implement
  */
-async function checkAccountLimitsAlerts(fromAccount, toAccount, amount) {/*TODO*/}
+async function checkAccountLimitsAlerts(account) { /*TODO*/ }
