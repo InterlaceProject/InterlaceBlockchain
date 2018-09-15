@@ -183,7 +183,6 @@ async function initBlockchain(transfer) {
   a1.availableBalance=1000;
   a1.unit='SRD';
   a1.balance=1000;
-  a1.accountType=AccountType.CC;
   a1.member=factory.newRelationship(NS, 'Individual', 'm1');
   a1.upperLimit=1000000;
 
@@ -193,7 +192,6 @@ async function initBlockchain(transfer) {
   a2.availableBalance=1000;
   a2.unit='SRD';
   a2.balance=1000;
-  a2.accountType=AccountType.CC;
   a2.member=factory.newRelationship(NS, 'Individual', 'm2');
   a2.upperLimit=1000000;
 
@@ -229,16 +227,24 @@ async function previewCheck(fromAccount, toAccount, operation) {
 
   } else if (ttCheck.indexOf(toAccount.member.activeGroup) > -1) { // check for valid group membership
     //determine connectivity information
-    let accTCheck = accT('credit', fromAccount.unit, fromAccount.accountType);
+    let accTCheck = accT('credit', fromAccount.unit, getAccountType(fromAccount));
 
     if (accTCheck === null) { //like SourceAccountViolation
       throw new Error('Source account ' + fromAccount.accountID + ' not of the correct type');
-    } else if (accTCheck.indexOf(toAccount.accountType) <= -1) { //check for valid account type
+    } else if (accTCheck.indexOf(getAccountType(toAccount)) <= -1) { //check for valid account type
       throw new Error('Account ' + fromAccount.accountID + ' is not in one of these groups ' + accTCheck);
     }
   }
 
   // no error => ok
+}
+
+/**
+ * Helper function returning the account type of a given account
+ */
+function getAccountType(account) {
+  let type = account.$type;
+  return type.replace('Account', '');
 }
 
 /**
@@ -278,7 +284,7 @@ function canBeSpentBy(account, amount) {
  * @param {Double} amount
  */
 function canBeCashedBy(account, amount) {
-  return account.accountType !== AccountType.DOMU &&
+  return getAccountType(account) !== AccountType.DOMU &&
           (account.balance + amount) <= account.upperLimit;
 }
 /**

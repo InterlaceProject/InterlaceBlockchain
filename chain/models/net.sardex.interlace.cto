@@ -93,7 +93,6 @@ abstract asset Account identified by accountID {
   o String accountID
   o Unit unit
   o Double balance
-  o AccountType accountType // TODO: fix inheritance issue
   --> Member member
 }
 
@@ -103,12 +102,12 @@ asset SysAccount extends Account {}
 
 asset CCAccount extends MemberAccount {
   o Double creditLimit
-  //o DateTime creditLimitDate
+  o DateTime creditLimitDate
   o Double availableBalance
   o Double upperLimit
 }
 
 event LimitAlert {
   o String alertText
-  --> account
+  --> Account account
 }
