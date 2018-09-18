@@ -19,6 +19,7 @@ globals:
     AccountType: true
     Operation: true
     Unit: true
+    TransactionStatus: true
 rules:
     indent:
         - error

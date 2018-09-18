@@ -31,3 +31,9 @@ var AccountType = Object.freeze({
   'Bisoo': 'Bisoo',
   'Topup': 'Topup'
 });
+
+var TransactionStatus = Object.freeze({
+  'Pending': 'Pending',
+  'Performed': 'Performed',
+  'Rejected': 'Rejected'
+});

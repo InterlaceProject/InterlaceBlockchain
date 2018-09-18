@@ -76,7 +76,7 @@ enum GroupType {
   o consumer_verified
 }
 
-enum  AccountType {
+enum AccountType {
   o CC
   o DOMU
   o MIRROR
@@ -86,6 +86,11 @@ enum  AccountType {
   o Topup
 }
 
+enum TransactionStatus {
+  o Pending
+  o Performed
+  o Rejected
+}
 /////////////////////////////////////////////////////////////////////
 //ASSETS
 /////////////////////////////////////////////////////////////////////
@@ -107,6 +112,18 @@ asset CCAccount extends MemberAccount {
   o Double upperLimit
 }
 
+asset PendingTransfer identified by otp {
+  o String otp
+  //info: creditor=seller=toAccount
+  //      debitor=buyer=fromAccount
+  o DebitTransfer transfer
+  o TransactionStatus status
+  o DateTime created
+}
+
+/////////////////////////////////////////////////////////////////////
+//events
+/////////////////////////////////////////////////////////////////////
 event LimitAlert {
   o String alertText
   --> Account account
