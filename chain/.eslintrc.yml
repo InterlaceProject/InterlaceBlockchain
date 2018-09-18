@@ -14,6 +14,11 @@ globals:
     getCurrentParticipant: true
     post: true
     emit: true
+    GroupType: true
+    NS: true
+    AccountType: true
+    Operation: true
+    Unit: true
 rules:
     indent:
         - error
