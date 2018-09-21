@@ -94,6 +94,7 @@ enum TransactionStatus {
   o Pending
   o Performed
   o Rejected
+  o Expired
 }
 /////////////////////////////////////////////////////////////////////
 // ASSETS

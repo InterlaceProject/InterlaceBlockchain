@@ -86,13 +86,13 @@ var NS = namespace;
  */
 async function CreditTransfer(transfer) {
   //some basic checks
-  checkAmountPlausible(transfer);
+  await checkAmountPlausible(transfer);
 
   // preview check throws error in case of violation
-  previewCheck(transfer);
+  await previewCheck(transfer);
 
-  // account limits checks thrwos error in case of violation
-  accountLimitCheck(transfer.senderAccount,
+  // account limits checks throws error in case of violation
+  await accountLimitCheck(transfer.senderAccount,
     transfer.recipientAccount,
     transfer.amount);
 
@@ -114,11 +114,12 @@ async function moveMoney(transfer) {
   transfer.recipientAccount.balance += transfer.amount;
 
   //get account type registry
-  let assetRegistry = await getAssetRegistry(NS + '.' + transfer.$type);
+  let arSA = await getAssetRegistry(NS + '.' + transfer.senderAccount.$type);
+  let arRA = await getAssetRegistry(NS + '.' + transfer.recipientAccount.$type);
 
   // persist the state of the account as well as accountReceive => append to ledger
-  await assetRegistry.update(transfer.senderAccount);
-  await assetRegistry.update(transfer.recipientAccount);
+  await arSA.update(transfer.senderAccount);
+  await arRA.update(transfer.recipientAccount);
 }
 
 
@@ -146,24 +147,25 @@ function checkAmountPlausible(transfer) {
  */
 async function DebitTransfer(transfer) {
   // some basic checks
-  checkAmountPlausible(transfer);
+  await checkAmountPlausible(transfer);
 
   // preview check throws error in case of violation
-  previewCheck(transfer);
+  await previewCheck(transfer);
 
-  // account limits checks thrwos error in case of violation
-  accountLimitCheck(transfer.senderAccount,
+  // account limits checks throws error in case of violation
+  await accountLimitCheck(transfer.senderAccount,
     transfer.recipientAccount,
     transfer.amount);
 
-  if (transfer.amount <= config.debit.quick_transfer_amount) { // immediate transfer
+  // check for immediate transfer possibility
+  if (transfer.amount <= config.debit.quick_transfer_amount) {
     // perform the transfer
     await moveMoney(transfer);
 
     // check account limits and emits event if violated
     await checkAccountLimitsAlerts(transfer.senderAccount);
   } else { // requires confirmation
-    //add the debit transfer to the pending queue
+    // add the debit transfer to the pending queue
     let otp = await insertPendingTransfer(transfer);
 
     // emit request for confirmation
@@ -197,7 +199,8 @@ async function updatePendingTransaction(pT, newState) {
 }
 
 /**
- * DebitTransfer transaction
+ * Acknowledge a DebitTransfer transaction and write it
+ * to the ledger if applicable
  * @param {net.sardex.interlace.DebitTransferAcknowledge} ack
  * @transaction
  */
@@ -205,25 +208,25 @@ async function DebitTransferAcknowledge(ack) {
   //get pending transaction
   let pT = ack.transfer;
 
-  // varify state of pending transaction
+  // varify state of pending transfer
   if (pT.state !== TransactionStatus.Pending) {
-    throw new Error('Pending transfer is not in state "pending" but in state "' + pT.state + '"');
+    throw new Error('Transfer is not in state "pending" but in state "' + pT.state + '"');
   }
 
   // varify if pending transaction has been expired
   if ((Date.now() - pT.created) > config.debit.lifetime_otps) {
     //update state from Pending to Rejected
-    await updatePendingTransaction(pT, TransactionStatus.Rejected);
+    await updatePendingTransaction(pT, TransactionStatus.Expired);
 
     // throw error and stop execution
-    throw new Error('OTP ' + config.debit.lifetime_otps + ' has been expired.');
+    throw new Error('OTP "' + pT.otp + '"" has been expired.');
   }
 
   try {
     let transfer = pT.transfer;
 
     // account limits checks throws error in case of violation
-    accountLimitCheck(transfer.senderAccount,
+    await accountLimitCheck(transfer.senderAccount,
       transfer.recipientAccount,
       transfer.amount);
 
@@ -282,11 +285,13 @@ async function insertPendingTransfer(transfer) {
   let factory = getFactory();
   let otp = getOTP();
 
+  // create pending transfer
   let pT = factory.newResource(NS, 'PendingTransfer', otp);
   pT.transfer = transfer;
   pT.state = TransactionStatus.Pending;
   pT.created = Date.now();
 
+  // write the new pending transfer to the ledger
   let accReg = await getAssetRegistry(NS + '.PendingTransfer');
   await accReg.addAll([pT]);
 }
@@ -303,14 +308,14 @@ async function previewCheck(transfer) {
   let toGroup = toAccount.member.activeGroup;
   let operation = getOperation(transfer);
 
-  //fix fromGroup for debit
   //info: debit request
   //      debitor=buyer=fromAccount
   //      creditor=seller=toAccount
+  //fix fromGroup for debit request
   if (operation === Operation.debit) {
     //from- and to-group taken from creditor
     let fromGroup = toAccount.member.activeGroup;
-    let toGroup = toAccount.member.activeGroup;
+    let toGroup = fromGroup;
   }
 
   //check equal units
@@ -323,18 +328,21 @@ async function previewCheck(transfer) {
 
   if (ttCheck === null) { //like MayStartCredit/DebitOpns
     //SourceGroupViolation
-    let accountID = fromAccount.member.memberID;
+    let memberID = fromAccount.member.memberID;
     if (operation === Operation.debit) {
-      accountID = toAccount.member.memberID;
+      memberID = toAccount.member.memberID;
     }
 
-    throw new Error('Member: ' + accountID + ' in group ' + fromGroup +
-                    ' does not have the right privileges for that transfer');
+    throw new Error('Member: ' + memberID + ' in group ' + fromGroup +
+      ' does not have the right privileges for that transfer');
   }
 
   if (ttCheck.indexOf(toGroup) > -1) { // check for valid group membership
     //determine connectivity information
-    let accTCheck = accT('credit', fromAccount.unit, getAccountType(fromAccount));
+    let accTCheck = accT(
+      'credit',
+      fromAccount.unit,
+      getAccountType(fromAccount));
 
     if (accTCheck === null) { //like SourceAccountViolation
       throw new Error('Source account ' + fromAccount.accountID +
@@ -346,12 +354,12 @@ async function previewCheck(transfer) {
 
     // no error => ok
   } else {
-    let accountID = fromAccount.member.memberID;
+    let memberID = fromAccount.member.memberID;
     if (operation === Operation.debit) {
-      accountID = toAccount.member.memberID;
+      memberID = toAccount.member.memberID;
     }
 
-    throw new Error('Member: ' + accountID + ' is in group ' + fromGroup +
+    throw new Error('Member: ' + memberID + ' is in group ' + fromGroup +
       ' but needs to be in one of those: ' + ttCheck.join(', '));
   }
 

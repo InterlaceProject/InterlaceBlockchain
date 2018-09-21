@@ -35,5 +35,6 @@ var AccountType = Object.freeze({
 var TransactionStatus = Object.freeze({
   'Pending': 'Pending',
   'Performed': 'Performed',
-  'Rejected': 'Rejected'
+  'Rejected': 'Rejected',
+  'Expired': 'Expired'
 });
