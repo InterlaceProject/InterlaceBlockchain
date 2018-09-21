@@ -182,6 +182,11 @@ async function DebitTransfer(transfer) {
   }
 }
 
+/**
+ * update pending transfer state
+ * @param {net.sardex.interlace.PendingTransfer} pT
+ * @param {net.sardex.interlace.TransactionStatus} newState
+ */
 async function updatePendingTransaction(pT, newState) {
   //update state
   pT.state = newState;
@@ -231,6 +236,7 @@ async function DebitTransferAcknowledge(ack) {
     // check account limits and emits event if violated
     await checkAccountLimitsAlerts(transfer.senderAccount);
   } catch(error) {
+    // fix pending transfer state before throwing error
     await updatePendingTransaction(pT, TransactionStatus.Rejected);
     throw error;
   }
