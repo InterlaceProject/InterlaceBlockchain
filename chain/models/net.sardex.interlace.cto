@@ -45,11 +45,11 @@ abstract transaction Transfer {
 }
 
 transaction CreditTransfer extends Transfer {}
-
 transaction DebitTransfer extends Transfer {}
 
-transaction DebitAckReqAnswCompletion {
+transaction DebitTransferAcknowledge {
   --> PendingTransfer transfer
+  //add user signature for production
 }
 
 //transaction initalizing the chain
@@ -121,7 +121,7 @@ asset PendingTransfer identified by otp {
   //info: creditor=seller=toAccount
   //      debitor=buyer=fromAccount
   o DebitTransfer transfer
-  o TransactionStatus status
+  o TransactionStatus state
   o DateTime created
 }
 
@@ -133,7 +133,7 @@ event LimitAlert {
   o String alertText
   --> Account account
 }
-event RequestDebitAckReqAnswCompletion {
+event RequestDebitAcknowledge {
   o String otp
   --> String debitorAccount
 }

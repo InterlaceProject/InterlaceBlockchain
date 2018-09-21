@@ -2,7 +2,8 @@
 
 var config = {
   debit: {
-    quick_transfer_amount: 100
+    quick_transfer_amount: 100,
+    lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
   },
   accTTree: {
     credit: {
@@ -96,7 +97,7 @@ async function CreditTransfer(transfer) {
     transfer.amount);
 
   // check account limits and emits event if violated
-  checkAccountLimitsAlerts(transfer.senderAccount);
+  await checkAccountLimitsAlerts(transfer.senderAccount);
 
   // perform the transfer
   await moveMoney(transfer);
@@ -160,7 +161,7 @@ async function DebitTransfer(transfer) {
     await moveMoney(transfer);
 
     // check account limits and emits event if violated
-    checkAccountLimitsAlerts(transfer.senderAccount);
+    await checkAccountLimitsAlerts(transfer.senderAccount);
   } else { // requires confirmation
     //add the debit transfer to the pending queue
     let otp = await insertPendingTransfer(transfer);
@@ -168,7 +169,7 @@ async function DebitTransfer(transfer) {
     // emit request for confirmation
     // by creating event RequestDebitAckReqAnswCompletion
     let factory = getFactory();
-    let confirmReq = factory.newEvent(NS, 'RequestDebitAckReqAnswCompletion');
+    let confirmReq = factory.newEvent(NS, 'RequestDebitAcknowledge');
 
     confirmReq.otp = otp;
     confirmReq.debitorAccount = factory.newRelationship(
@@ -178,6 +179,60 @@ async function DebitTransfer(transfer) {
 
     // emit the event
     emit(confirmReq);
+  }
+}
+
+async function updatePendingTransaction(pT, newState) {
+  //update state
+  pT.state = newState;
+
+  //get registry and update pending transfer in ledger
+  let ptReg = await getAssetRegistry(NS + '.' + pT.$type);
+  await ptReg.update(pT);
+}
+
+/**
+ * DebitTransfer transaction
+ * @param {net.sardex.interlace.DebitTransferAcknowledge} ack
+ * @transaction
+ */
+async function DebitTransferAcknowledge(ack) {
+  //get pending transaction
+  let pT = ack.transfer;
+
+  // varify state of pending transaction
+  if (pT.state !== TransactionStatus.Pending) {
+    throw new Error('Pending transfer is not in state "pending" but in state "' + pT.state + '"');
+  }
+
+  // varify if pending transaction has been expired
+  if ((Date.now() - pT.created) > config.debit.lifetime_otps) {
+    //update state from Pending to Rejected
+    await updatePendingTransaction(pT, TransactionStatus.Rejected);
+
+    // throw error and stop execution
+    throw new Error('OTP ' + config.debit.lifetime_otps + ' has been expired.');
+  }
+
+  try {
+    let transfer = pT.transfer;
+
+    // account limits checks throws error in case of violation
+    accountLimitCheck(transfer.senderAccount,
+      transfer.recipientAccount,
+      transfer.amount);
+
+    //update state from Pending to Performed
+    await updatePendingTransaction(pT, TransactionStatus.Performed);
+
+    // perform the transfer
+    await moveMoney(transfer);
+
+    // check account limits and emits event if violated
+    await checkAccountLimitsAlerts(transfer.senderAccount);
+  } catch(error) {
+    await updatePendingTransaction(pT, TransactionStatus.Rejected);
+    throw error;
   }
 }
 
@@ -223,8 +278,8 @@ async function insertPendingTransfer(transfer) {
 
   let pT = factory.newResource(NS, 'PendingTransfer', otp);
   pT.transfer = transfer;
-  pT.status = TransactionStatus.Pending;
-  pT.created = new Date();
+  pT.state = TransactionStatus.Pending;
+  pT.created = Date.now();
 
   let accReg = await getAssetRegistry(NS + '.PendingTransfer');
   await accReg.addAll([pT]);
@@ -291,7 +346,7 @@ async function previewCheck(transfer) {
     }
 
     throw new Error('Member: ' + accountID + ' is in group ' + fromGroup +
-                    ' but needs to be in one of those: ' + ttCheck.join(', '));
+      ' but needs to be in one of those: ' + ttCheck.join(', '));
   }
 
   // no error => ok
@@ -299,6 +354,7 @@ async function previewCheck(transfer) {
 
 /**
  * Helper function returning the account type of a given account
+ * @param {net.sardex.interlace.Account} account
  */
 function getAccountType(account) {
   try {
@@ -311,6 +367,7 @@ function getAccountType(account) {
 
 /**
  * Helper function returning the operation of a given transfer
+ * @param {net.sardex.interlace.Transfer} transfer
  */
 function getOperation(transfer) {
   try {
