@@ -18,8 +18,8 @@ var GroupType = Object.freeze ({
 });
 
 var Operation = Object.freeze ({
-  'Credit': 'Credit',
-  'Debit': 'Debit'
+  'credit': 'credit',
+  'debit': 'debit'
 });
 
 var AccountType = Object.freeze({

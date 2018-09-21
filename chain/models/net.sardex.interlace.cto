@@ -48,6 +48,10 @@ transaction CreditTransfer extends Transfer {}
 
 transaction DebitTransfer extends Transfer {}
 
+transaction DebitAckReqAnswCompletion {
+  --> PendingTransfer transfer
+}
+
 //transaction initalizing the chain
 transaction InitBlockchain {}
 
@@ -60,8 +64,8 @@ enum Unit {
 }
 
 enum Operation {
-  o Credit
-  o Debit
+  o credit
+  o debit
 }
 
 enum GroupType {
@@ -92,7 +96,7 @@ enum TransactionStatus {
   o Rejected
 }
 /////////////////////////////////////////////////////////////////////
-//ASSETS
+// ASSETS
 /////////////////////////////////////////////////////////////////////
 abstract asset Account identified by accountID {
   o String accountID
@@ -122,9 +126,14 @@ asset PendingTransfer identified by otp {
 }
 
 /////////////////////////////////////////////////////////////////////
-//events
+// events need to be picked up by middleware and delivered to
+// the right destination
 /////////////////////////////////////////////////////////////////////
 event LimitAlert {
   o String alertText
   --> Account account
+}
+event RequestDebitAckReqAnswCompletion {
+  o String otp
+  --> String debitorAccount
 }

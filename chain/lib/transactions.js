@@ -1,43 +1,47 @@
 'use strict';
 
-var accTTree = {
-  credit: {
-    SRD: {
-      'CC': ['CC', 'DOMU', 'MIRROR'],
-      'DOMU': ['CC'],
-      'MIRROR' : ['CC']
+var config = {
+  debit: {
+    quick_transfer_amount: 100
+  },
+  accTTree: {
+    credit: {
+      SRD: {
+        'CC': ['CC', 'DOMU', 'MIRROR'],
+        'DOMU': ['CC'],
+        'MIRROR' : ['CC']
+      }
+    },
+    debit: {
+      SRD: {
+        'CC': ['CC']
+      },
+      EUR: {
+        'Income': ['Bisoo']
+      }
     }
   },
-  debit: {
-    SRD: {
-      'CC': ['CC']
+  ttTree: {
+    credit: {
+      SRD: {
+        company: ['company', 'employee', 'MNGR', 'full'],
+        full: ['company', 'employee', 'MNGR', 'full'],
+        MNGR: ['retail', 'company', 'employee', 'MNGR', 'full'],
+        employee: ['retail', 'company', 'full'],
+        consumer_verified: ['retail', 'company', 'full']
+      }
     },
-    EUR: {
-      'Income': ['Bisoo']
-    }
-  }
-};
-
-var ttTree = {
-  credit: {
-    SRD: {
-      company: ['company', 'employee', 'MNGR', 'full'],
-      full: ['company', 'employee', 'MNGR', 'full'],
-      MNGR: ['retail', 'company', 'employee', 'MNGR', 'full'],
-      employee: ['retail', 'company', 'full'],
-      consumer_verified: ['retail', 'company', 'full']
-    }
-  },
-  debit: {
-    SRD: {
-      'retail': 'retail',
-      'company': 'company',
-      'full': 'full',
-      'MNGR': 'MNGR'
-    },
-    EUR: {
-      'retail': 'retail',
-      'full': 'full'
+    debit: {
+      SRD: {
+        'retail': 'retail',
+        'company': 'company',
+        'full': 'full',
+        'MNGR': 'MNGR'
+      },
+      EUR: {
+        'retail': 'retail',
+        'full': 'full'
+      }
     }
   }
 };
@@ -46,14 +50,14 @@ var ttTree = {
  * get back transfer type or null if undefined
  */
 function tt(operation, unit, memberGroup) {
-  return treeSearch(operation, unit, memberGroup, ttTree);
+  return treeSearch(operation, unit, memberGroup, config.ttTree);
 }
 
 /**
  * get back account connectivity or null if undefined
  */
 function accT(operation, unit, accountType) {
-  return treeSearch(operation, unit, accountType, accTTree);
+  return treeSearch(operation, unit, accountType, config.accTTree);
 }
 
 /**
@@ -80,34 +84,58 @@ var NS = namespace;
  * @transaction
  */
 async function CreditTransfer(transfer) {
+  //some basic checks
+  checkAmountPlausible(transfer);
+
+  // preview check throws error in case of violation
+  previewCheck(transfer);
+
+  // account limits checks thrwos error in case of violation
+  accountLimitCheck(transfer.senderAccount,
+    transfer.recipientAccount,
+    transfer.amount);
+
+  // check account limits and emits event if violated
+  checkAccountLimitsAlerts(transfer.senderAccount);
+
+  // perform the transfer
+  await moveMoney(transfer);
+}
+
+/**
+ * do the actual money moving
+ * @param {net.sardex.interlace.Transfer} transfer
+ * @transaction
+ */
+async function moveMoney(transfer) {
+  // move money
+  transfer.senderAccount.balance -= transfer.amount;
+  transfer.recipientAccount.balance += transfer.amount;
+
+  //get account type registry
+  let assetRegistry = await getAssetRegistry(NS + '.' + transfer.$type);
+
+  // persist the state of the account as well as accountReceive => append to ledger
+  await assetRegistry.update(transfer.senderAccount);
+  await assetRegistry.update(transfer.recipientAccount);
+}
+
+
+/**
+ * some basic checks for credit/debit
+ * @param {net.sardex.interlace.Transfer} transfer
+ * @transaction
+ */
+function checkAmountPlausible(transfer) {
   // some error checking
   if (transfer.amount <= 0) {
     throw new Error('Transfer amount must be a positive value.');
   }
   if (transfer.senderAccount.balance < transfer.amount) {
     throw new Error('Transfer amount ' + transfer.amount +
-    ' is bigger than the available balance of ' + transfer.senderAccount.balance);
+                    ' is bigger than the available balance of ' +
+                    transfer.senderAccount.balance);
   }
-
-  // preview check throws error in case of violation
-  previewCheck(transfer.senderAccount, transfer.recipientAccount, transfer.amount);
-
-  // account limits checks thrwos error in case of violation
-  accountLimitCheck(transfer.senderAccount, transfer.recipientAccount, transfer.amount);
-
-  // check account limits and emits event if violated
-  checkAccountLimitsAlerts(transfer.senderAccount);
-
-  // move money
-  transfer.senderAccount.balance -= transfer.amount;
-  transfer.recipientAccount.balance += transfer.amount;
-
-  //TODO: handle different account types
-  let assetRegistry = await getAssetRegistry('net.sardex.interlace.CCAccount');
-
-  // persist the state of the account as well as accountReceive => append to ledger
-  await assetRegistry.update(transfer.senderAccount);
-  await assetRegistry.update(transfer.recipientAccount);
 }
 
 /**
@@ -116,41 +144,154 @@ async function CreditTransfer(transfer) {
  * @transaction
  */
 async function DebitTransfer(transfer) {
-  throw new Error('not implemented');
+  // some basic checks
+  checkAmountPlausible(transfer);
+
+  // preview check throws error in case of violation
+  previewCheck(transfer);
+
+  // account limits checks thrwos error in case of violation
+  accountLimitCheck(transfer.senderAccount,
+    transfer.recipientAccount,
+    transfer.amount);
+
+  if (transfer.amount <= config.debit.quick_transfer_amount) { // immediate transfer
+    // perform the transfer
+    await moveMoney(transfer);
+
+    // check account limits and emits event if violated
+    checkAccountLimitsAlerts(transfer.senderAccount);
+  } else { // requires confirmation
+    //add the debit transfer to the pending queue
+    let otp = await insertPendingTransfer(transfer);
+
+    // emit request for confirmation
+    // by creating event RequestDebitAckReqAnswCompletion
+    let factory = getFactory();
+    let confirmReq = factory.newEvent(NS, 'RequestDebitAckReqAnswCompletion');
+
+    confirmReq.otp = otp;
+    confirmReq.debitorAccount = factory.newRelationship(
+      NS,
+      transfer.senderAccount.$type,
+      transfer.senderAccount.accountID);
+
+    // emit the event
+    emit(confirmReq);
+  }
+}
+
+/**
+ * create id - quick solution - rethink for production
+ */
+function makeid() {
+  var text = '';
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (var i = 0; i < 20; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
+/**
+ * simple hash function - insecure!!!!
+ * @param {String} s
+ */
+function simplehash(s) {
+  for(var i=0, h=1; i<s.length; i++) {
+    h=Math.imul(h+s.charCodeAt(i)|0, 2654435761);
+  }
+  return (h^h>>>17)>>>0;
+}
+
+/**
+ * get one time pad - insecure!!!!
+ * just a quick solution
+ */
+function getOTP() {
+  return simplehash(makeid());
+}
+
+/**
+ * insert a pending Transfer
+ * @param {net.sardex.interlace.Transfer} transfer
+ */
+async function insertPendingTransfer(transfer) {
+  let factory = getFactory();
+  let otp = getOTP();
+
+  let pT = factory.newResource(NS, 'PendingTransfer', otp);
+  pT.transfer = transfer;
+  pT.status = TransactionStatus.Pending;
+  pT.created = new Date();
+
+  let accReg = await getAssetRegistry(NS + '.PendingTransfer');
+  await accReg.addAll([pT]);
 }
 
 /**
  * PreviewCheck as of D3.1 => ASIMSpec
  * throws 'Error' on checking issue
- * @param {net.sardex.interlace.Member} member
- * @param {net.sardex.interlace.Account} fromAccount
- * @param {net.sardex.interlace.Account} toAccount
- * @param {net.sardex.interlace.Operation} operation
+ * @param {net.sardex.interlace.Transfer} transfer
  */
-async function previewCheck(fromAccount, toAccount, operation) {
+async function previewCheck(transfer) {
+  let fromAccount = transfer.senderAccount;
+  let toAccount = transfer.recipientAccount;
+  let fromGroup = fromAccount.member.activeGroup;
+  let toGroup = toAccount.member.activeGroup;
+  let operation = getOperation(transfer);
+
+  //fix fromGroup for debit
+  //info: debit request
+  //      debitor=buyer=fromAccount
+  //      creditor=seller=toAccount
+  if (operation === Operation.debit) {
+    //from- and to-group taken from creditor
+    let fromGroup = toAccount.member.activeGroup;
+    let toGroup = toAccount.member.activeGroup;
+  }
+
   //check equal units
   if (fromAccount.unit !== toAccount.unit) {
     throw new Error('Units do not match');
   }
 
   //determine transfer type
-  let ttCheck = tt('credit', fromAccount.unit, fromAccount.member.activeGroup);
+  let ttCheck = tt(operation, fromAccount.unit, fromGroup);
 
   if (ttCheck === null) { //like MayStartCredit/DebitOpns
     //SourceGroupViolation
-    throw new Error('Member: ' + fromAccount.member.memberID + ' in group ' +
-                    fromAccount.member.activeGroup +
-                    ' does not have the right privilegedes for that transfer');
+    let accountID = fromAccount.member.memberID;
+    if (operation === Operation.debit) {
+      accountID = toAccount.member.memberID;
+    }
 
-  } else if (ttCheck.indexOf(toAccount.member.activeGroup) > -1) { // check for valid group membership
+    throw new Error('Member: ' + accountID + ' in group ' + fromGroup +
+                    ' does not have the right privileges for that transfer');
+  }
+
+  if (ttCheck.indexOf(toGroup) > -1) { // check for valid group membership
     //determine connectivity information
     let accTCheck = accT('credit', fromAccount.unit, getAccountType(fromAccount));
 
     if (accTCheck === null) { //like SourceAccountViolation
-      throw new Error('Source account ' + fromAccount.accountID + ' not of the correct type');
+      throw new Error('Source account ' + fromAccount.accountID +
+        ' not of the correct type');
     } else if (accTCheck.indexOf(getAccountType(toAccount)) <= -1) { //check for valid account type
-      throw new Error('Account ' + fromAccount.accountID + ' is not in one of these groups ' + accTCheck);
+      throw new Error('Account ' + fromAccount.accountID +
+        ' is not in one of these groups ' + accTCheck);
     }
+
+    // no error => ok
+  } else {
+    let accountID = fromAccount.member.memberID;
+    if (operation === Operation.debit) {
+      accountID = toAccount.member.memberID;
+    }
+
+    throw new Error('Member: ' + accountID + ' is in group ' + fromGroup +
+                    ' but needs to be in one of those: ' + ttCheck.join(', '));
   }
 
   // no error => ok
@@ -160,8 +301,24 @@ async function previewCheck(fromAccount, toAccount, operation) {
  * Helper function returning the account type of a given account
  */
 function getAccountType(account) {
-  let type = account.$type;
-  return type.replace('Account', '');
+  try {
+    let type = account.$type;
+    return type.replace('Account', '');
+  } catch (error) {
+    throw new Error('Problem determining account type: ' + error);
+  }
+}
+
+/**
+ * Helper function returning the operation of a given transfer
+ */
+function getOperation(transfer) {
+  try {
+    let type = transfer.$type.replace('Transfer', '');
+    return type.toLowerCase();
+  } catch (error) {
+    throw new Error('Problem determining transfer operation: ' + error);
+  }
 }
 
 /**
