@@ -47,6 +47,7 @@ abstract transaction Transfer {
 transaction CreditTransfer extends Transfer {}
 transaction DebitTransfer extends Transfer {}
 
+@returns(String)
 transaction DebitTransferAcknowledge {
   --> PendingTransfer transfer
   //add user signature for production

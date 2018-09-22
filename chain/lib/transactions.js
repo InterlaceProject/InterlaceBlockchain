@@ -206,6 +206,7 @@ async function updatePendingTransaction(pT, newState, rejectionReason) {
  * Acknowledge a DebitTransfer transaction and write it
  * to the ledger if applicable
  * @param {net.sardex.interlace.DebitTransferAcknowledge} ack
+ * @returns {String} status text.
  * @transaction
  */
 async function DebitTransferAcknowledge(ack) {
@@ -221,7 +222,7 @@ async function DebitTransferAcknowledge(ack) {
   if ((new Date() - pT.created) > config.debit.lifetime_otps) {
     //update state from Pending to Rejected
     await updatePendingTransaction(pT, TransactionStatus.Expired);
-    return; //TODO: raise event, provide return value
+    return 'OTP ' + pT.otp + ' is expired.'; //TODO: raise event
   }
 
   try {
@@ -243,8 +244,10 @@ async function DebitTransferAcknowledge(ack) {
   } catch(error) {
     // fix pending transfer state before throwing error
     await updatePendingTransaction(pT, TransactionStatus.Rejected, error.toString());
-    return; //TODO: raise event, provide return value
+    return 'Error acknoledging transfer: ' + error.toString(); //TODO: raise event
   }
+
+  return 'Transfer performed successfull.';
 }
 
 /**
