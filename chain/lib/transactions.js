@@ -1,6 +1,7 @@
 'use strict';
 
 var config = {
+  NS: 'net.sardex.interlace',
   debit: {
     quick_transfer_amount: 100,
     lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
@@ -76,9 +77,6 @@ function treeSearch(p1, p2, p3, tree) {
   return null;
 }
 
-var namespace = 'net.sardex.interlace';
-var NS = namespace;
-
 /**
  * CreditTransfer transaction
  * @param {net.sardex.interlace.CreditTransfer} transfer
@@ -114,8 +112,8 @@ async function moveMoney(transfer) {
   transfer.recipientAccount.balance += transfer.amount;
 
   //get account type registry
-  let arSA = await getAssetRegistry(NS + '.' + transfer.senderAccount.$type);
-  let arRA = await getAssetRegistry(NS + '.' + transfer.recipientAccount.$type);
+  let arSA = await getAssetRegistry(config.NS + '.' + transfer.senderAccount.$type);
+  let arRA = await getAssetRegistry(config.NS + '.' + transfer.recipientAccount.$type);
 
   // persist the state of the account as well as accountReceive => append to ledger
   await arSA.update(transfer.senderAccount);
@@ -171,11 +169,11 @@ async function DebitTransfer(transfer) {
     // emit request for confirmation
     // by creating event RequestDebitAckReqAnswCompletion
     let factory = getFactory();
-    let confirmReq = factory.newEvent(NS, 'RequestDebitAcknowledge');
+    let confirmReq = factory.newEvent(config.NS, 'RequestDebitAcknowledge');
 
     confirmReq.otp = otp;
     confirmReq.debitorAccount = factory.newRelationship(
-      NS,
+      config.NS,
       transfer.senderAccount.$type,
       transfer.senderAccount.accountID);
 
@@ -194,7 +192,7 @@ async function updatePendingTransaction(pT, newState) {
   pT.state = newState;
 
   //get registry and update pending transfer in ledger
-  let ptReg = await getAssetRegistry(NS + '.' + pT.$type);
+  let ptReg = await getAssetRegistry(config.NS + '.' + pT.$type);
   await ptReg.update(pT);
 }
 
@@ -214,7 +212,7 @@ async function DebitTransferAcknowledge(ack) {
   }
 
   // varify if pending transaction has been expired
-  if ((Date.now() - pT.created) > config.debit.lifetime_otps) {
+  if ((new Date() - pT.created) > config.debit.lifetime_otps) {
     //update state from Pending to Rejected
     await updatePendingTransaction(pT, TransactionStatus.Expired);
 
@@ -266,7 +264,7 @@ function simplehash(s) {
   for(var i=0, h=1; i<s.length; i++) {
     h=Math.imul(h+s.charCodeAt(i)|0, 2654435761);
   }
-  return (h^h>>>17)>>>0;
+  return ((h^h>>>17)>>>0).toString();
 }
 
 /**
@@ -280,20 +278,26 @@ function getOTP() {
 /**
  * insert a pending Transfer
  * @param {net.sardex.interlace.Transfer} transfer
+ * @returns {String} otp
  */
 async function insertPendingTransfer(transfer) {
   let factory = getFactory();
   let otp = getOTP();
-
   // create pending transfer
-  let pT = factory.newResource(NS, 'PendingTransfer', otp);
+  let pT = factory.newResource(config.NS, 'PendingTransfer', otp);
   pT.transfer = transfer;
   pT.state = TransactionStatus.Pending;
-  pT.created = Date.now();
+  pT.created = new Date();
+  pT.otp = otp;
 
-  // write the new pending transfer to the ledger
-  let accReg = await getAssetRegistry(NS + '.PendingTransfer');
-  await accReg.addAll([pT]);
+  try {
+    let accReg = await getAssetRegistry(config.NS + '.PendingTransfer');
+    await accReg.addAll([pT]);
+  } catch (err) {
+    throw new Error('write error: ' + err.toString());
+  }
+
+  return otp;
 }
 
 /**

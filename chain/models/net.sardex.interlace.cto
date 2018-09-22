@@ -136,5 +136,5 @@ event LimitAlert {
 }
 event RequestDebitAcknowledge {
   o String otp
-  --> String debitorAccount
+  --> Account debitorAccount
 }

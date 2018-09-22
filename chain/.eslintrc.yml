@@ -15,11 +15,11 @@ globals:
     post: true
     emit: true
     GroupType: true
-    NS: true
     AccountType: true
     Operation: true
     Unit: true
     TransactionStatus: true
+    config: true
 rules:
     indent:
         - error
