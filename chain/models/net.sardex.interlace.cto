@@ -124,6 +124,7 @@ asset PendingTransfer identified by otp {
   o DebitTransfer transfer
   o TransactionStatus state
   o DateTime created
+  o String rejectionReason optional
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -137,4 +138,10 @@ event LimitAlert {
 event RequestDebitAcknowledge {
   o String otp
   --> Account debitorAccount
+}
+event DebitAcknowledgeInvalid { //TODO
+  o String opt
+  --> Member debitor
+  --> Member creditor
+  o String message
 }

@@ -4,7 +4,8 @@ var config = {
   NS: 'net.sardex.interlace',
   debit: {
     quick_transfer_amount: 100,
-    lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
+    //lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
+    lifetime_otps: (1000), //in milliseconds => 2 hours
   },
   accTTree: {
     credit: {
@@ -186,10 +187,15 @@ async function DebitTransfer(transfer) {
  * update pending transfer state
  * @param {net.sardex.interlace.PendingTransfer} pT
  * @param {net.sardex.interlace.TransactionStatus} newState
+ * @param {String} rejectionReason
  */
-async function updatePendingTransaction(pT, newState) {
+async function updatePendingTransaction(pT, newState, rejectionReason) {
   //update state
   pT.state = newState;
+
+  if (newState === TransactionStatus.Rejected) {
+    pT.rejectionReason = rejectionReason;
+  }
 
   //get registry and update pending transfer in ledger
   let ptReg = await getAssetRegistry(config.NS + '.' + pT.$type);
@@ -215,9 +221,7 @@ async function DebitTransferAcknowledge(ack) {
   if ((new Date() - pT.created) > config.debit.lifetime_otps) {
     //update state from Pending to Rejected
     await updatePendingTransaction(pT, TransactionStatus.Expired);
-
-    // throw error and stop execution
-    throw new Error('OTP "' + pT.otp + '"" has been expired.');
+    return; //TODO: raise event, provide return value
   }
 
   try {
@@ -238,8 +242,8 @@ async function DebitTransferAcknowledge(ack) {
     await checkAccountLimitsAlerts(transfer.senderAccount);
   } catch(error) {
     // fix pending transfer state before throwing error
-    await updatePendingTransaction(pT, TransactionStatus.Rejected);
-    throw error;
+    await updatePendingTransaction(pT, TransactionStatus.Rejected, error.toString());
+    return; //TODO: raise event, provide return value
   }
 }
 
