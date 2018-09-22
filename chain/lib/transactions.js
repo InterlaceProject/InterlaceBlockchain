@@ -4,8 +4,8 @@ var config = {
   NS: 'net.sardex.interlace',
   debit: {
     quick_transfer_amount: 100,
-    //lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
-    lifetime_otps: (1000), //in milliseconds => 2 hours
+    lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
+    //lifetime_otps: (1000), //in milliseconds => 1 Second
   },
   accTTree: {
     credit: {
