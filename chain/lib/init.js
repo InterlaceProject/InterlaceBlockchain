@@ -27,7 +27,7 @@ async function initBlockchain(transfer) {
   m2.availableCapacity=1000000;
 
   let a1 = factory.newResource(config.NS, 'CCAccount', 'a1');
-  a1.creditLimit=0;
+  a1.creditLimit=1000;
   a1.creditLimitDate=new Date('2018-08-30T19:11:40.212Z');
   a1.availableBalance=1000;
   a1.unit='SRD';
@@ -36,7 +36,7 @@ async function initBlockchain(transfer) {
   a1.upperLimit=1000000;
 
   let a2 = factory.newResource(config.NS, 'CCAccount', 'a2');
-  a2.creditLimit=0;
+  a2.creditLimit=1000;
   a2.creditLimitDate=new Date('2018-08-30T19:11:40.212Z');
   a2.availableBalance=1000;
   a2.unit='SRD';

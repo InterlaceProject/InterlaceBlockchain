@@ -91,7 +91,8 @@ async function CreditTransfer(transfer) {
   await previewCheck(transfer);
 
   // account limits checks throws error in case of violation
-  await accountLimitCheck(transfer.senderAccount,
+  await accountLimitCheck(
+    transfer.senderAccount,
     transfer.recipientAccount,
     transfer.amount);
 
@@ -132,11 +133,11 @@ function checkAmountPlausible(transfer) {
   if (transfer.amount <= 0) {
     throw new Error('Transfer amount must be a positive value.');
   }
-  if (transfer.senderAccount.balance < transfer.amount) {
-    throw new Error('Transfer amount ' + transfer.amount +
-                    ' is bigger than the available balance of ' +
-                    transfer.senderAccount.balance);
-  }
+  //if (transfer.senderAccount.balance < transfer.amount) {
+  //  throw new Error('Transfer amount ' + transfer.amount +
+  //                  ' is bigger than the available balance of ' +
+  //                  transfer.senderAccount.balance);
+  //}
 }
 
 /**
@@ -152,7 +153,8 @@ async function DebitTransfer(transfer) {
   await previewCheck(transfer);
 
   // account limits checks throws error in case of violation
-  await accountLimitCheck(transfer.senderAccount,
+  await accountLimitCheck(
+    transfer.senderAccount,
     transfer.recipientAccount,
     transfer.amount);
 
@@ -173,10 +175,11 @@ async function DebitTransfer(transfer) {
     let confirmReq = factory.newEvent(config.NS, 'RequestDebitAcknowledge');
 
     confirmReq.otp = otp;
-    confirmReq.debitorAccount = factory.newRelationship(
-      config.NS,
-      transfer.senderAccount.$type,
-      transfer.senderAccount.accountID);
+    confirmReq.debitorAccount =
+      factory.newRelationship(
+        config.NS,
+        transfer.senderAccount.$type,
+        transfer.senderAccount.accountID);
 
     // emit the event
     emit(confirmReq);
@@ -210,15 +213,16 @@ async function updatePendingTransaction(pT, newState, rejectionReason) {
  * @transaction
  */
 async function DebitTransferAcknowledge(ack) {
-  const factory = getFactory();
-  const rS = factory.newConcept(config.NS, 'AcknowledgeStatus');
+  //prepare return AcknowledgeStatus
+  let rS = getFactory().newConcept(config.NS, 'AcknowledgeStatus');
 
   //get pending transaction
   let pT = ack.transfer;
 
   // varify state of pending transfer
   if (pT.state !== TransactionStatus.Pending) {
-    throw new Error('Transfer is not in state "pending" but in state "' + pT.state + '"');
+    throw new Error('Transfer is not in state "' +
+      TransactionStatus.Pending + '" but in state "' + pT.state + '"');
   }
 
   // varify if pending transaction has been expired
@@ -236,7 +240,8 @@ async function DebitTransferAcknowledge(ack) {
     let transfer = pT.transfer;
 
     // account limits checks throws error in case of violation
-    await accountLimitCheck(transfer.senderAccount,
+    await accountLimitCheck(
+      transfer.senderAccount,
       transfer.recipientAccount,
       transfer.amount);
 
@@ -249,8 +254,11 @@ async function DebitTransferAcknowledge(ack) {
     // check account limits and emits event if violated
     await checkAccountLimitsAlerts(transfer.senderAccount);
   } catch(error) {
-    // fix pending transfer state before throwing error
-    await updatePendingTransaction(pT, TransactionStatus.Rejected, error.toString());
+    // fix pending transfer state before returning status
+    await updatePendingTransaction(
+      pT,
+      TransactionStatus.Rejected,
+      error.toString());
 
     //prepare return message
     rS.status = TransactionStatus.Expired;
@@ -267,10 +275,10 @@ async function DebitTransferAcknowledge(ack) {
  * create id - quick solution - rethink for production
  */
 function makeid() {
-  var text = '';
-  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let text = '';
+  let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for (var i = 0; i < 20; i++) {
+  for (let i = 0; i < 20; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
@@ -303,6 +311,7 @@ function getOTP() {
 async function insertPendingTransfer(transfer) {
   let factory = getFactory();
   let otp = getOTP();
+
   // create pending transfer
   let pT = factory.newResource(config.NS, 'PendingTransfer', otp);
   pT.transfer = transfer;
@@ -313,8 +322,8 @@ async function insertPendingTransfer(transfer) {
   try {
     let accReg = await getAssetRegistry(config.NS + '.PendingTransfer');
     await accReg.addAll([pT]);
-  } catch (err) {
-    throw new Error('write error: ' + err.toString());
+  } catch (error) {
+    throw new Error('write error: ' + error.toString());
   }
 
   return otp;
@@ -338,8 +347,8 @@ async function previewCheck(transfer) {
   //fix fromGroup for debit request
   if (operation === Operation.debit) {
     //from- and to-group taken from creditor
-    let fromGroup = toAccount.member.activeGroup;
-    let toGroup = fromGroup;
+    fromGroup = toAccount.member.activeGroup;
+    toGroup = fromGroup;
   }
 
   //check equal units
@@ -439,12 +448,22 @@ async function accountLimitCheck(fromAccount, toAccount, amount) {
 
 /**
  * canBeSpentBy as of D3.1 => ASIMSpec
+ * returns available balance
+ * @param {net.sardex.interlace.Account} account
+ * @returns {Double}
+ */
+function availableBalance(account) {
+  return account.balance + account.creditLimit;
+}
+
+/**
+ * canBeSpentBy as of D3.1 => ASIMSpec
  * returns boolean
  * @param {net.sardex.interlace.Account} account
  * @param {Double} amount
  */
 function canBeSpentBy(account, amount) {
-  return account.availableBalance >= amount;
+  return availableBalance(account) >= amount;
 }
 /**
  * canBeCashedBy as of D3.1 => ASIMSpec
@@ -469,7 +488,7 @@ function hasSellCapacityFor(account, amount) {
 /**
  * CheckAccountLimitsAlerts as of D3.1 => ASIMSpec
  * emits event LimitAlert if applicable
- * @param {net.sardex.interlace.Account} account account (carries member information)
+ * @param {net.sardex.interlace.Account} account account that carries member info
  * // TODO: implement
  */
 async function checkAccountLimitsAlerts(account) { /*TODO*/ }
