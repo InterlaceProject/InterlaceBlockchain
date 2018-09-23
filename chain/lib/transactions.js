@@ -206,10 +206,13 @@ async function updatePendingTransaction(pT, newState, rejectionReason) {
  * Acknowledge a DebitTransfer transaction and write it
  * to the ledger if applicable
  * @param {net.sardex.interlace.DebitTransferAcknowledge} ack
- * @returns {String} status text.
+ * @returns {net.sardex.interlace.AcknowledgeStatus} status text.
  * @transaction
  */
 async function DebitTransferAcknowledge(ack) {
+  const factory = getFactory();
+  const rS = factory.newConcept(config.NS, 'AcknowledgeStatus');
+
   //get pending transaction
   let pT = ack.transfer;
 
@@ -222,7 +225,11 @@ async function DebitTransferAcknowledge(ack) {
   if ((new Date() - pT.created) > config.debit.lifetime_otps) {
     //update state from Pending to Rejected
     await updatePendingTransaction(pT, TransactionStatus.Expired);
-    return 'OTP ' + pT.otp + ' is expired.'; //TODO: raise event
+
+    //prepare return message
+    rS.status = TransactionStatus.Expired;
+    rS.description = 'OTP ' + pT.otp + ' is expired.';
+    return rS; //TODO: raise event
   }
 
   try {
@@ -244,10 +251,16 @@ async function DebitTransferAcknowledge(ack) {
   } catch(error) {
     // fix pending transfer state before throwing error
     await updatePendingTransaction(pT, TransactionStatus.Rejected, error.toString());
-    return 'Error acknoledging transfer: ' + error.toString(); //TODO: raise event
+
+    //prepare return message
+    rS.status = TransactionStatus.Expired;
+    rS.description = 'Error acknoledging transfer: ' + error.toString();
+    return rS; //TODO: raise event
   }
 
-  return 'Transfer performed successfull.';
+  rS.status = TransactionStatus.Performed;
+  rS.description = 'Transfer performed successfull.';
+  return rS; //TODO: raise event
 }
 
 /**

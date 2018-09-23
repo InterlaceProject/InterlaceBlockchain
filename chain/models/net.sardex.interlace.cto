@@ -47,7 +47,7 @@ abstract transaction Transfer {
 transaction CreditTransfer extends Transfer {}
 transaction DebitTransfer extends Transfer {}
 
-@returns(String)
+@returns(AcknowledgeStatus)
 transaction DebitTransferAcknowledge {
   --> PendingTransfer transfer
   //add user signature for production
@@ -126,6 +126,15 @@ asset PendingTransfer identified by otp {
   o TransactionStatus state
   o DateTime created
   o String rejectionReason optional
+}
+
+/////////////////////////////////////////////////////////////////////
+// concepts
+/////////////////////////////////////////////////////////////////////
+
+concept AcknowledgeStatus {
+  o TransactionStatus status
+  o String description
 }
 
 /////////////////////////////////////////////////////////////////////
