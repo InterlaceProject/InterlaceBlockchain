@@ -32,7 +32,7 @@ cd chain
 
 ### Shutting down
 
-Sometimes it is useful to throw away everything and restart from scratch. To teardown fabric and remove playground left-overs execute:
+Sometimes it is useful to throw away everything and restart from scratch. To teardown fabric and remove card left overs execute:
 
 ```bash
 cd fabric
