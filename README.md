@@ -71,7 +71,7 @@ Submit a debit transfer from account *a1* to *a2* with amount of 200 SRD:
 composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.DebitTransfer", "amount": 200, "senderAccount": "resource:net.sardex.interlace.CCAccount#a1", "recipientAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
 ```
 
-A successfull debit transfer creates a PendingTransfer entry with status *Pending* containing an OTP (one time pad). This OTP can be used by the debitor to confirm the transaction. Thus in the next example *"995317396"* is used to call an acknoledge transaction *DebitTransferAcknowledge* to confirm the debit transfer:
+A successfull debit transfer creates a PendingTransfer entry with status *Pending* containing an OTP (one time pad). This OTP can be used by the debitor to confirm the transaction. Thus in the next example *"995317396"* is used to call a transaction *DebitTransferAcknowledge* to acknoledge the debit transfer:
 
 ```bash
 composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.DebitTransferAcknowledge", "transfer": "resource:net.sardex.interlace.PendingTransfer#995317396" }'
