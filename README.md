@@ -4,8 +4,8 @@ This is the Interlace blockchain implementation based on the specifications crea
 
 ## Setup instructions
 
-First it is necessary to install the pre-Requisites which can be found [here](https://hyperledger.github.io/composer/latest/installing/installing-prereqs.html) and are available for Linux and Mac OS. Currently these are the recommended operating systems, however, with additional effort it might be possible to run the INTERLACE blockchain on Windows directly.
-To support windows user a virtual machine setup for windows user is also available and can be found [here](https://github.com/hirsche/hyperledger). It is a very simple setup based on [vagrant](https://www.vagrantup.com/) utilizing an Ubuntu 16.04 LTS virtual machine running on a hyper-v hypervisor.
+First it is necessary to install the pre-requisites which can be found [here](https://hyperledger.github.io/composer/latest/installing/installing-prereqs.html) and are available for Linux and Mac OS. Currently these are the recommended operating systems, however, with additional effort it might be possible to run the INTERLACE blockchain on Windows directly.
+To support windows user a virtual machine setup for windows user is also available and can be found [here](https://github.com/hirsche/hyperledger). It is a very simple setup based on [vagrant](https://www.vagrantup.com/) utilizing an [Ubuntu 16.04 LTS](http://old-releases.ubuntu.com/releases/16.04.4/) virtual machine running on a hyper-v hypervisor.
 
 Additionally it is also important to setup a development environment described at the [composer github repository](https://hyperledger.github.io/composer/latest/installing/development-tools.html). If you do not want to set up the complete environment it would be still recommended to install and start Composer Playground. Playground enables you to connect and test the Interlace payment network. Nevertheless, playground is not required and you might use composer-cli or other methods to utilized the network.
 
@@ -48,7 +48,7 @@ If you've decided to install Composer Playground it can be started using that co
 composer-playground
 ```
 
-The standard configuration opens a browser connecting to Playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-ip and fill in the address manually in the url field.
+The standard configuration opens a browser connecting to playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-ip and fill in the address manually in the url field.
 
 ## General architecture:
 
