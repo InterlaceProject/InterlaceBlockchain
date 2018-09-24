@@ -6,17 +6,11 @@ This is the Interlace blockchain implementation based on the specifications crea
 
 First it is necessary to install the pre-Requisites which can be found [here](https://hyperledger.github.io/composer/latest/installing/installing-prereqs.html) and are available for Linux and Mac OS. Currently these are the recommended operating systems, however, with additional effort it might be possible to run the INTERLACE blockchain on Windows.
 
-Additionally it is also important to setup a development environment described at the [composer github repository](https://hyperledger.github.io/composer/latest/installing/development-tools.html). If you do not want to set up the complete environment it would still be required to install at least Playground in order to let the scripts run properly.
+Additionally it is also important to setup a development environment described at the [composer github repository](https://hyperledger.github.io/composer/latest/installing/development-tools.html). If you do not want to set up the complete environment it would be still recommended to install and start Composer Playground. Playground enables you to connect and test the Interlace payment network. Nevertheless, playground is not required and you might use composer-cli or other methods to utilized the network.
 
 ## Execution
 
 Next you can find some help to manage the interlace blockchain.
-
-### Start playground
-
-```bash
-composer-playground
-```
 
 ### Run fabric block chain (the first time)
 
@@ -45,6 +39,16 @@ cd fabric
 ./deletePlaygroundCards.sh
 ```
 
+### Start playground
+
+If you've decided to install Composer Playground it can be started using that command
+
+```bash
+composer-playground
+```
+
+The standard configuration opens a browser connecting to Playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-ip and fill in the address manually in the url field.
+
 ## General architecture:
 
 ![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/Architecture.jpg)
@@ -53,3 +57,4 @@ cd fabric
 ## .cto model diagram:
 
 ![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/DCN_V9.jpg)
+
