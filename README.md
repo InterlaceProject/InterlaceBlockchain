@@ -28,7 +28,7 @@ cd chain
 ./initNetwork.sh # use hyperledger composer to create a business network and deploy it
 ```
 
-**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain. Use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand. There is also a transaction called **InitBlockchain** available which sets up a plain testing environment.
+**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain. You may use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand. There is also a transaction called **InitBlockchain** available which sets up a plain testing environment.
 
 ### Shutting down
 
@@ -48,7 +48,7 @@ If you've decided to install Composer Playground it can be started using that co
 composer-playground
 ```
 
-The standard configuration opens a browser connecting to playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-ip and fill in the address manually in the url field.
+The standard configuration opens a browser connecting to playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-IP and fill in the address manually in the url field.
 
 ## General architecture:
 
