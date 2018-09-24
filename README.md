@@ -40,7 +40,7 @@ cd fabric
 ./deletePlaygroundCards.sh
 ```
 
-### Start playground
+### Start and test network with playground
 
 If you've decided to install Composer Playground it can be started using that command
 
@@ -50,6 +50,14 @@ composer-playground
 
 The standard configuration opens a browser connecting to playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-IP and fill in the address manually in the url field.
 
+### Run Transaction with composer-cli
+
+Submit a credit transfer from account *a1* to *a2* with amount of 800 SRD:
+
+```bash
+composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.CreditTransfer", "amount": 800, "senderAccount": "resource:net.sardex.interlace.CCAccount#a1", "recipientAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
+```
+
 ## General architecture:
 
 ![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/Architecture.jpg)
@@ -58,4 +66,3 @@ The standard configuration opens a browser connecting to playground at localhost
 ## .cto model diagram:
 
 ![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/DCN_V9.jpg)
-
