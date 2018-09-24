@@ -52,11 +52,20 @@ The standard configuration opens a browser connecting to playground at localhost
 
 ### Run Transaction with composer-cli
 
+Init network transaction:
+
+```bash
+composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.InitBlockchain" }'
+```
+The *InitBlockchain* transaction is setting up some basic accounts as well as demo members to continue with simple transactions right away.
+
 Submit a credit transfer from account *a1* to *a2* with amount of 800 SRD:
 
 ```bash
 composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.CreditTransfer", "amount": 800, "senderAccount": "resource:net.sardex.interlace.CCAccount#a1", "recipientAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
 ```
+
+
 
 ## General architecture:
 
