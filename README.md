@@ -11,7 +11,7 @@ Additionally it is also important to setup a development environment described a
 
 ## Execution
 
-Next you can find some help to manage the interlace blockchain.
+Next you can find some help to manage the interlace blockchain and run transactions against the chain.
 
 ### Run fabric block chain (the first time)
 
