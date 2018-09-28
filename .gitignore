@@ -8,8 +8,9 @@ chain/*.card
 chain/*.bna
 chain/node_modules
 webapp/node_modules
+webapp/package-lock.json
+webapp/dist
 .composer/
 *.bna
 node_modules/
 temp
-webapp/package-lock.json
