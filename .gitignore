@@ -6,6 +6,8 @@ chain/package-lock.json
 chain/.composer
 chain/*.card
 chain/*.bna
+chain/node_modules
+webapp/node_modules
 .composer/
 *.bna
 node_modules/

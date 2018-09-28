@@ -10,6 +10,7 @@
 *.pem text eol=lf
 *.key text eol=lf
 *_sk text eol=lf
+* text eol=lf
 LICENSE text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
