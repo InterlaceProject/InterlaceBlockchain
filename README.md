@@ -50,7 +50,23 @@ composer-playground
 
 The standard configuration opens a browser connecting to playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-IP and fill in the address manually in the url field.
 
-### Run Transaction with composer-cli
+### Start a rest server
+
+Once the network is running (no playground needed) it is also possible to start a HTTP-Server which allows to interact with the network over REST. The scripts
+
+```bash
+startRestServer.sh
+```
+
+starts the server and allows to get an overview of the restfull interface by opening
+
+http://localhost:3000/explorer
+
+in a browser. The rest interface itself may be used over
+
+http://localhost:3000/
+
+### Run Transactions with composer-cli
 
 Init network transaction:
 

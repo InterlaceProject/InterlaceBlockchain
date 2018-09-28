@@ -1,5 +1,6 @@
 chain/network/crypto-config/
-chain/network/interlace-*
+chain/network/interlace-channel.tx
+chain/network/interlace-genesis.block
 chain/package.json
 chain/package-lock.json
 chain/.composer
