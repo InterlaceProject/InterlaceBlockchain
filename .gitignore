@@ -8,3 +8,4 @@ chain/*.bna
 .composer/
 *.bna
 node_modules/
+temp
