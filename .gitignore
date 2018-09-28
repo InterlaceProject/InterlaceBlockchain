@@ -12,3 +12,4 @@ webapp/node_modules
 *.bna
 node_modules/
 temp
+webapp/package-lock.json
