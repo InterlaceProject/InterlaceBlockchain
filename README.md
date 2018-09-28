@@ -13,6 +13,20 @@ Additionally it is also important to setup a development environment described a
 
 Next you can find some help to manage the interlace blockchain and run transactions against the chain.
 
+### Before Execution
+
+Before executing it is recommended for local setup to add an entry for name *interlace.chain* to ip 127.0.0.1 (localhost) in the OS hosts file. Here is a list of hosts locations according to your operating systems
+
+* Mac OS: /private/etc/hosts
+* Linux: /etc/hosts
+* Windows: C:\\Windows\\System32\\drivers\\etc\\hosts
+
+The format may vary a little but usually a new host is defined with it's **ip** and **hostname** like
+
+127.0.0.1   interlace.chain
+
+when refering to our Interlace configuration. Depending on the operating system it might be also necessary to update and restart the respective services.
+
 ### Run fabric block chain (the first time)
 
 ```bash
@@ -52,19 +66,22 @@ The standard configuration opens a browser connecting to playground at localhost
 
 ### Start a rest server
 
-Once the network is running (no playground needed) it is also possible to start a HTTP-Server which allows to interact with the network over REST. The scripts
+Once the network is running (no playground needed) it is also possible to start a HTTP-Server which allows to interact with the network over REST. The script
 
 ```bash
-startRestServer.sh
+cd chain
+./startRestServer.sh
 ```
 
 starts the server and allows to get an overview of the restfull interface by opening
 
-http://localhost:3000/explorer
+http://interlace.chain:3000/explorer
 
-in a browser. The rest interface itself may be used over
+in a browser. The REST interface itself may be contacted over
 
-http://localhost:3000/
+http://interlace.chain:3000/
+
+when using it together with an external application
 
 ### Run Transactions with composer-cli
 
