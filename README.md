@@ -27,7 +27,7 @@ The format may vary a little but usually a new host with its hostname is defined
 127.0.0.1  interlace.chain
 ```
 
-when refering to our Interlace configuration. Depending on the operating system it might be also necessary to update and restart the respective services.
+when referring to our Interlace configuration. Depending on the operating system it might be also necessary to update and restart the respective services.
 
 ### Run fabric block chain (the first time)
 
@@ -75,7 +75,7 @@ cd chain
 ./startRestServer.sh
 ```
 
-starts the server and allows to get an overview of the restfull interface by opening
+starts the server and allows to get an overview of the restful interface by opening
 
 http://interlace.chain:3000/explorer
 
@@ -87,7 +87,7 @@ when using it together with an external application. In case you didn't setup th
 
 ## Working with the environment
 
-Next we take a closer look how the environment might be facilitated using different approaches. It is possible to connect to the chain using composer-cli, taking advantage of composer playground (the grafical interface) or use the simple web-front-end created for the project.
+Next we take a closer look how the environment might be facilitated using different approaches. It is possible to connect to the chain using composer-cli, taking advantage of composer playground (the graphical interface) or use the simple web-front-end created for the project.
 
 ### Start and test network with playground
 
@@ -97,7 +97,7 @@ If you've decided to install and use Composer Playground it can be started using
 composer-playground
 ```
 
-The standard configuration opens a browser connecting to playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-IP and fill in the address manually in the url field.
+The standard configuration opens a browser connecting to playground at localhost with port *8080*. If you've running playground in a separate virtual environment like e.g. in a docker container, it may be necessary to start the browser manually, determine the VM-/Containers-IP and fill in the address manually in the URL field.
 
 ### Run Transactions with composer-cli
 
@@ -120,7 +120,7 @@ Submit a debit transfer from account *a1* to *a2* with amount of 200 SRD:
 composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.DebitTransfer", "amount": 200, "senderAccount": "resource:net.sardex.interlace.CCAccount#a1", "recipientAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
 ```
 
-A successfull debit transfer creates a PendingTransfer entry with status *Pending* containing an OTP (one time pad). This OTP can be used by the debitor to confirm the transaction. Thus in the next example *"995317396"* is used to call a transaction *DebitTransferAcknowledge* to acknoledge the debit transfer:
+A successful debit transfer creates a PendingTransfer entry with status *Pending* containing an OTP (one time pad). This OTP can be used by the debitor to confirm the transaction. Thus in the next example *"995317396"* is used to call a transaction *DebitTransferAcknowledge* to acknoledge the debit transfer:
 
 ```bash
 composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.DebitTransferAcknowledge", "transfer": "resource:net.sardex.interlace.PendingTransfer#995317396" }'
@@ -146,11 +146,11 @@ cd webapp
 npm start
 ```
 
-*npm* will start a web server at port 4200. If you work locally it also tries to open a browser which is showing the web application, otherwise you'd need start a browser manually and enter the URL by yourself. This is the url where the server can be reached:
+*npm* will start a web server at port 4200. If you work locally it also tries to open a browser which is showing the web application, otherwise you'd need start a browser manually and enter the URL by yourself. This is the URL where the server can be reached:
 
 http://interlace.chain:4200
 
-The web page is based on AngularJS [TODO link] and communicates over REST with our previously started REST server over asychronous AJAX-request.
+The web page is based on AngularJS [TODO link] and communicates over REST with our previously started REST server over asynchronous AJAX-request.
 
 ## Development Helpers
 
@@ -165,7 +165,7 @@ cd chain
 eslint .
 ```
 
-to check the JavaScript code for errors. *eslint* searches in all directories for js-files loads and checks them. Thus be carefull when creating backup files. If they end in *".js"* they are varified against the eslint specifications.
+to check the JavaScript code for errors. *eslint* searches in all directories for js-files loads and checks them. Thus be careful when creating backup files. If they end in *".js"* they are varified against the eslint specifications.
 
 ## General architecture
 
