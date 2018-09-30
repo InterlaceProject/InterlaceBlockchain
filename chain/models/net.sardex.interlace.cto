@@ -127,6 +127,7 @@ asset PendingTransfer identified by otp {
   o DebitTransfer transfer
   o TransactionStatus state
   o DateTime created
+  o DateTime expires
   o String rejectionReason optional
 }
 

@@ -4,8 +4,8 @@ var config = {
   NS: 'net.sardex.interlace',
   debit: {
     quick_transfer_amount: 100,
-    lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
-    //lifetime_otps: (1000), //in milliseconds => 1 Second
+    //lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
+    lifetime_otps: (1000), //in milliseconds => 1 Second
   },
   accTTree: {
     credit: {
@@ -226,7 +226,7 @@ async function DebitTransferAcknowledge(ack) {
   }
 
   // varify if pending transaction has been expired
-  if ((new Date() - pT.created) > config.debit.lifetime_otps) {
+  if (new Date() >= pT.expires) {
     //update state from Pending to Rejected
     await updatePendingTransaction(pT, TransactionStatus.Expired);
 
@@ -278,9 +278,8 @@ async function DebitTransferAcknowledge(ack) {
  */
 async function CleanupPendingTransfers(transfer) {
   //TODO: maybe read lifetime_otps from ledger?
-  let expiredPending = await query(
-    'selectExpiredPendingTransfers',
-    {now: (new Date()), lifetime_otps: config.debit.lifetime_otps});
+  let expiredPending =
+    await query('selectExpiredPendingTransfers', {now: (new Date())});
 
   expiredPending.forEach(p => p.state=TransactionStatus.Expired);
 
@@ -334,6 +333,7 @@ async function insertPendingTransfer(transfer) {
   pT.transfer = transfer;
   pT.state = TransactionStatus.Pending;
   pT.created = new Date();
+  pT.expires = new Date(pT.created.getTime() + config.debit.lifetime_otps);
   pT.otp = otp;
 
   try {
