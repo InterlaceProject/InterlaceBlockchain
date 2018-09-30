@@ -282,21 +282,19 @@ async function CleanupPendingTransfers(transfer) {
     await query('selectExpiredPendingTransfers', {now: (new Date())});
   let aR = await getAssetRegistry(config.NS + '.PendingTransfer');
 
+  // change all states to expired
   expiredPending.forEach(p => p.state = TransactionStatus.Expired);
   await aR.updateAll(expiredPending);
 }
 
 /**
  * create id - quick solution - rethink for production
+ * Math.random should be unique because of its seeding algorithm.
+ * Convert it to base 36 (numbers + letters), and grab the first 9 characters
+ * after the decimal.
  */
 function makeid() {
-  let text = '';
-  let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 20; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
+  return Math.random().toString(36).substr(2, 20);
 }
 
 /**
@@ -337,7 +335,7 @@ async function insertPendingTransfer(transfer) {
 
   try {
     let accReg = await getAssetRegistry(config.NS + '.PendingTransfer');
-    await accReg.addAll([pT]);
+    await accReg.add(pT);
   } catch (error) {
     throw new Error('write error: ' + error.toString());
   }
@@ -402,9 +400,7 @@ async function previewCheck(transfer) {
     // no error => ok
   } else {
     let memberID = fromAccount.member.memberID;
-    if (operation === Operation.debit) {
-      memberID = toAccount.member.memberID;
-    }
+    if (operation === Operation.debit) memberID = toAccount.member.memberID;
 
     throw new Error('Member: ' + memberID + ' is in group ' + fromGroup +
       ' but needs to be in one of those: ' + ttCheck.join(', '));
