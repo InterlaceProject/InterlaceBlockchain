@@ -37,14 +37,19 @@ cd fabric
 ./startFabric.sh # start up docker environment using docker-compose
 ```
 
-### Finally initialize Interlace-Chain by calling
+### Initialize Interlace-Chain
+
+Finally after fabric has been started it is necessary to initialize the block chain with a call of
 
 ```bash
 cd chain
 ./initNetwork.sh # use hyperledger composer to create a business network and deploy it
 ```
 
-**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain. You may use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand. There is also a transaction called **InitBlockchain** available which sets up a plain testing environment.
+**./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain.
+
+You may further use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand, but it is recommended to update  the JavaScript function `initBlockchain(transfer)` in *./chain/lib/init.js*. That chain-code part is executed when transaction **InitBlockchain** is submitted.
+
 
 ### Network updates after chain-code changes
 
