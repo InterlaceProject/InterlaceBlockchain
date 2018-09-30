@@ -280,11 +280,12 @@ async function CleanupPendingTransfers(transfer) {
   //TODO: maybe read lifetime_otps from ledger?
   let expiredPending =
     await query('selectExpiredPendingTransfers', {now: (new Date())});
-
-  expiredPending.forEach(p => p.state=TransactionStatus.Expired);
-
   let aR = await getAssetRegistry(config.NS, 'PendingTransfer');
-  aR.updateAll(expiredPending);
+
+  for (let i = 0; i < expiredPending.length; i++) {
+    expiredPending[i].state = TransactionStatus.Expired;
+    await aR.update(expiredPending[i]);
+  }
 }
 
 /**
