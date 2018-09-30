@@ -283,7 +283,7 @@ async function CleanupPendingTransfers(transfer) {
 
   expiredPending.forEach(p => p.state=TransactionStatus.Expired);
 
-  let aR = getAssetRegistry(config.NS, 'PendingTransfer');
+  let aR = await getAssetRegistry(config.NS, 'PendingTransfer');
   aR.updateAll(expiredPending);
 }
 
