@@ -56,6 +56,8 @@ transaction DebitTransferAcknowledge {
 //transaction initalizing the chain
 transaction InitBlockchain {}
 
+transaction CleanupPendingTransfers {}
+
 /////////////////////////////////////////////////////////////////////
 // ENUMS !! should be in synch with enum.js !!
 /////////////////////////////////////////////////////////////////////

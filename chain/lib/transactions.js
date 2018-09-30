@@ -272,6 +272,23 @@ async function DebitTransferAcknowledge(ack) {
 }
 
 /**
+ * DebitTransfer transaction
+ * @param {net.sardex.interlace.CleanupPendingTransfers} transfer
+ * @transaction
+ */
+async function CleanupPendingTransfers(transfer) {
+  //TODO: maybe read lifetime_otps from ledger?
+  let expiredPending = await query(
+    'selectExpiredPendingTransfers',
+    {now: (new Date()), lifetime_otps: config.debit.lifetime_otps});
+
+  expiredPending.forEach(p => p.state=TransactionStatus.Expired);
+
+  let aR = getAssetRegistry(config.NS, 'PendingTransfer');
+  aR.updateAll(expiredPending);
+}
+
+/**
  * create id - quick solution - rethink for production
  */
 function makeid() {

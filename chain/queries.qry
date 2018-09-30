@@ -1,0 +1,7 @@
+query selectExpiredPendingTransfers {
+  description: "select all expired transfer"
+  statement:
+      SELECT net.sardex.interlace.PendingTransfer
+          WHERE (((_$now - created) > _$lifetime_otps) AND
+                (state = 'Pending'))
+}
