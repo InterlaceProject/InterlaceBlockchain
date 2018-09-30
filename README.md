@@ -49,7 +49,7 @@ cd chain
 **./initNetwork.sh** will copy all models and script to the network peers to make them accessible in the hyperledger blockchain.
 
 You may further use playground to access and test Credit- and DebitTransfer transactions. **data.json** should act as a helper to init the network by hand, but it is recommended to update  the JavaScript function `initBlockchain(transfer)` in *./chain/lib/init.js*. That chain-code part is executed when transaction **InitBlockchain** is submitted.
-
+Be careful to run **InitBlockchain** only once otherwise errors or duplicate entries might happen.
 
 ### Network updates after chain-code changes
 
