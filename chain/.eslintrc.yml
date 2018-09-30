@@ -38,7 +38,9 @@ rules:
         - 0
         - args: none
     no-console: off
-    curly: error
+    curly:
+      - error
+      - multi-line
     eqeqeq: error
     no-throw-literal: error
     strict: error

@@ -280,12 +280,10 @@ async function CleanupPendingTransfers(transfer) {
   //TODO: maybe read lifetime_otps from ledger?
   let expiredPending =
     await query('selectExpiredPendingTransfers', {now: (new Date())});
-  let aR = await getAssetRegistry(config.NS, 'PendingTransfer');
+  let aR = await getAssetRegistry(config.NS + '.PendingTransfer');
 
-  for (let i = 0; i < expiredPending.length; i++) {
-    expiredPending[i].state = TransactionStatus.Expired;
-    await aR.update(expiredPending[i]);
-  }
+  expiredPending.forEach(p => p.state = TransactionStatus.Expired);
+  await aR.updateAll(expiredPending);
 }
 
 /**
@@ -380,9 +378,7 @@ async function previewCheck(transfer) {
   if (ttCheck === null) { //like MayStartCredit/DebitOpns
     //SourceGroupViolation
     let memberID = fromAccount.member.memberID;
-    if (operation === Operation.debit) {
-      memberID = toAccount.member.memberID;
-    }
+    if (operation === Operation.debit) memberID = toAccount.member.memberID;
 
     throw new Error('Member: ' + memberID + ' in group ' + fromGroup +
       ' does not have the right privileges for that transfer');
