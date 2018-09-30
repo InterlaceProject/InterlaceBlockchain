@@ -5,7 +5,7 @@ var config = {
   debit: {
     quick_transfer_amount: 100,
     lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
-    //lifetime_otps: (1000), //in milliseconds => 1 Second
+    //lifetime_otps: (1000), //in milliseconds => 1 Second, for testing
   },
   accTTree: {
     credit: {
@@ -114,8 +114,8 @@ async function moveMoney(transfer) {
   transfer.recipientAccount.balance += transfer.amount;
 
   //get account type registry
-  let arSA = await getAssetRegistry(config.NS + '.' + transfer.senderAccount.$type);
-  let arRA = await getAssetRegistry(config.NS + '.' + transfer.recipientAccount.$type);
+  let arSA = await getAssetRegistry(transfer.senderAccount.getFullyQualifiedType());
+  let arRA = await getAssetRegistry(transfer.recipientAccount.getFullyQualifiedType());
 
   // persist the state of the account as well as accountReceive => append to ledger
   await arSA.update(transfer.senderAccount);
@@ -178,7 +178,7 @@ async function DebitTransfer(transfer) {
     confirmReq.debitorAccount =
       factory.newRelationship(
         config.NS,
-        transfer.senderAccount.$type,
+        transfer.senderAccount.getType(),
         transfer.senderAccount.accountID);
 
     // emit the event
@@ -201,7 +201,7 @@ async function updatePendingTransaction(pT, newState, rejectionReason) {
   }
 
   //get registry and update pending transfer in ledger
-  let ptReg = await getAssetRegistry(config.NS + '.' + pT.$type);
+  let ptReg = await getAssetRegistry(pT.getFullyQualifiedType());
   await ptReg.update(pT);
 }
 
@@ -419,7 +419,7 @@ async function previewCheck(transfer) {
  */
 function getAccountType(account) {
   try {
-    let type = account.$type;
+    let type = account.getType();
     return type.replace('Account', '');
   } catch (error) {
     throw new Error('Problem determining account type: ' + error);
@@ -432,7 +432,7 @@ function getAccountType(account) {
  */
 function getOperation(transfer) {
   try {
-    let type = transfer.$type.replace('Transfer', '');
+    let type = transfer.getType().replace('Transfer', '');
     return type.toLowerCase();
   } catch (error) {
     throw new Error('Problem determining transfer operation: ' + error);
