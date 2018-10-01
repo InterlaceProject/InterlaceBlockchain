@@ -45,6 +45,9 @@ abstract transaction Transfer {
 }
 
 transaction CreditTransfer extends Transfer {}
+//info for debit transfer
+//      fromAccount=debitor=buyer
+//      toAccount=creditor=seller
 transaction DebitTransfer extends Transfer {}
 
 @returns(AcknowledgeStatus)
@@ -122,13 +125,11 @@ asset CCAccount extends MemberAccount {
 
 asset PendingTransfer identified by otp {
   o String otp
-  //info: creditor=seller=toAccount
-  //      debitor=buyer=fromAccount
-  o DebitTransfer transfer
-  o TransactionStatus state
   o DateTime created
   o DateTime expires
   o String rejectionReason optional
+  o DebitTransfer transfer
+  o TransactionStatus state
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -153,8 +154,6 @@ event RequestDebitAcknowledge {
   --> Account debitorAccount
 }
 event DebitAcknowledgeInvalid { //TODO
-  o String opt
-  --> Member debitor
-  --> Member creditor
+  o PendingTransfer pendingTransfer
   o String message
 }

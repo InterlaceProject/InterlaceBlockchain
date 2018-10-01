@@ -172,6 +172,22 @@ eslint .
 
 to check the JavaScript code for errors. [eslint](https://eslint.org/) searches in all directories for js-files loads and checks them. Thus be careful when creating backup files. If they end in *".js"* they are verified against the [eslint specifications](https://eslint.org/docs/user-guide/configuring).
 
+## Open Points
+
+  - When it is necessary to communicate that something has gone wrong:
+    - throw Error or
+    - raise an event
+    
+    In case of an event a transaction/transfer is recorded, without transferring any money.
+  - User Management
+    - How to issue certificate ?
+    - Manage separate user accounts ?
+    - Assignment of permissions ?
+    - Should there be additional permissions on the chain? If, yes, how to handle ?
+    - login
+  - Rest service authentication
+  - How to handle event/error delivery
+
 ## General architecture
 
 ![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/Architecture.jpg)
