@@ -15,7 +15,7 @@ async function initBlockchain(transfer) {
   m1.email=['f1@mail.com'];
   m1.phone=['0815'];
   m1.activeGroup=GroupType.company;
-  m1.availableCapacity=1000000;
+  m1.capacity=100000;
 
   let m2 = factory.newResource(config.NS, 'Individual', 'm2');
   m2.firstName='f2';
@@ -24,23 +24,25 @@ async function initBlockchain(transfer) {
   m2.email=['f2@mail.com'];
   m2.phone=['4711'];
   m2.activeGroup=GroupType.company;
-  m2.availableCapacity=1000000;
+  m2.capacity=100000;
 
   let a1 = factory.newResource(config.NS, 'CCAccount', 'a1');
   a1.creditLimit=1000;
-  a1.creditLimitDate=new Date('2018-08-30T19:11:40.212Z');
+  a1.creditLimitDate=new Date();
   a1.unit='SRD';
   a1.balance=1000;
   a1.member=factory.newRelationship(config.NS, 'Individual', 'm1');
-  a1.upperLimit=1000000;
+  a1.upperLimit=1000;
+  a1.availableCapacity=m1.capacity; //init with members capacity
 
   let a2 = factory.newResource(config.NS, 'CCAccount', 'a2');
-  a2.creditLimit=1000;
-  a2.creditLimitDate=new Date('2018-08-30T19:11:40.212Z');
+  a2.creditLimit=5000;
+  a2.creditLimitDate=new Date();
   a2.unit='SRD';
   a2.balance=1000;
   a2.member=factory.newRelationship(config.NS, 'Individual', 'm2');
-  a2.upperLimit=1000000;
+  a2.upperLimit=5000;
+  a2.availableCapacity=m2.capacity; //init with members capacity
 
   let partReg = await getParticipantRegistry(config.NS + '.Individual');
   await partReg.addAll([m1, m2]);

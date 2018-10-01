@@ -7,8 +7,8 @@ abstract participant Member identified by memberID {
   o String memberID
   o String[] email // e-mail
   o String[] phone // telephone number
-  o Double availableCapacity // Disponibilit commerciale residua
   o GroupType activeGroup // set current group membership type
+  o Double capacity optional// Disponibilit commerciale
 }
 
 participant Subscriber extends Member {
@@ -19,7 +19,6 @@ participant Subscriber extends Member {
   o String VAT // Numero IVA
   o String firstName optional // Nome
   o String surName optional // Cognome
-  o Double capacity optional // Disponibilit commerciale
   o DateTime capacityDate optional // Data  Disponibilit commerciale
   o Double rewardRate optional // rate of reward to consumer in SRD
   o Double[] euroFee optional // fee on B2C EUR sales in EUR
@@ -109,6 +108,7 @@ abstract asset Account identified by accountID {
   o String accountID
   o Unit unit
   o Double balance
+  o Double availableCapacity optional // sale volume left
   --> Member member
 }
 

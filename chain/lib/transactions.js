@@ -112,6 +112,7 @@ async function moveMoney(transfer) {
   // move money
   transfer.senderAccount.balance -= transfer.amount;
   transfer.recipientAccount.balance += transfer.amount;
+  transfer.recipientAccount.availableCapacity -= transfer.amount;
 
   //get account type registry
   let arSA = await getAssetRegistry(transfer.senderAccount.getFullyQualifiedType());
@@ -492,7 +493,7 @@ function canBeCashedBy(account, amount) {
  * @param {Double} amount
  */
 function hasSellCapacityFor(account, amount) {
-  return amount <= account.member.availableCapacity;
+  return amount <= account.availableCapacity;
 }
 
 /**
