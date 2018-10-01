@@ -195,4 +195,4 @@ to check the JavaScript code for errors. [eslint](https://eslint.org/) searches 
 
 ## .cto model diagram [TODO: update]
 
-![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/DCN_V9.jpg)
+![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/Hyperledger.jpg)
