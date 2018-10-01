@@ -120,7 +120,6 @@ asset CCAccount extends MemberAccount {
   o Double creditLimit
   o DateTime creditLimitDate
   o Double upperLimit
-  o Double capacity
 }
 
 asset PendingTransfer identified by otp {
