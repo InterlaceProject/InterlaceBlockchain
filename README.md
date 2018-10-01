@@ -175,7 +175,7 @@ to check the JavaScript code for errors. [eslint](https://eslint.org/) searches 
 ## Open Points
 
   - When it is necessary to communicate that something has gone wrong:
-    - throw Error or
+    - throw Error or    
     - raise an event
     
     In case of an event a transaction/transfer is recorded, without transferring any money.
