@@ -193,6 +193,6 @@ to check the JavaScript code for errors. [eslint](https://eslint.org/) searches 
 ![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/Architecture.jpg)
 
 
-## .cto model diagram [TODO: update]
+## .cto model diagram
 
 ![](https://raw.githubusercontent.com/InterlaceProject/InterlaceBlockchain/master/figs/Hyperledger.jpg)
