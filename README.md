@@ -187,6 +187,8 @@ to check the JavaScript code for errors. [eslint](https://eslint.org/) searches 
     - login
   - Rest service authentication
   - How to handle event/error delivery
+  - Handle private data (GDPR)
+  - composer is only used for prototyping => transition to a plain fabric implementation 
 
 ## General architecture
 
