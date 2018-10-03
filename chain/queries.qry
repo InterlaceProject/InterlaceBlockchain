@@ -1,5 +1,5 @@
 query selectExpiredPendingTransfers {
-  description: "select all expired transfer"
+  description: "select all expired transfer which are still in state pending"
   statement:
       SELECT net.sardex.interlace.PendingTransfer
           WHERE ((expires <= _$now) AND (state == 'Pending'))

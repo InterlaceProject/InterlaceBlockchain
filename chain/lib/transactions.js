@@ -313,8 +313,8 @@ function simplehash(s) {
  * get one time pad - insecure!!!!
  * just a quick solution
  */
-function getOTP() {
-  return simplehash(makeid());
+function getOTP(transfer) {
+  return simplehash(transfer.id.toString());
 }
 
 /**
@@ -324,7 +324,7 @@ function getOTP() {
  */
 async function insertPendingTransfer(transfer) {
   let factory = getFactory();
-  let otp = getOTP();
+  let otp = getOTP(transfer);
 
   // create pending transfer
   let pT = factory.newResource(config.NS, 'PendingTransfer', otp);
