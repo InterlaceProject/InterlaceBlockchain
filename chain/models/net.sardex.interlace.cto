@@ -41,7 +41,6 @@ abstract transaction Transfer {
   // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
   --> Account senderAccount
   --> Account recipientAccount
-  o DateTime timestamp
 }
 
 transaction CreditTransfer extends Transfer {}
@@ -53,7 +52,6 @@ transaction DebitTransfer extends Transfer {}
 @returns(AcknowledgeStatus)
 transaction DebitTransferAcknowledge {
   --> PendingTransfer transfer
-  o DateTime timestamp
   //add user signature for production
 }
 
