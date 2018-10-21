@@ -6,6 +6,13 @@ var config = {
     quick_transfer_amount: 100,
     lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
     //lifetime_otps: (1000), //in milliseconds => 1 Second, for testing
+    debitDueDuration: function (year) {
+      let dayMLSeconds = 1000*3600*24;
+      if (year%4 === 0 && (year%100 !== 0 || year%400 === 0)) {
+        return 366 * dayMLSeconds;
+      }
+      return 365 * dayMLSeconds;
+    }
   },
   accTTree: {
     credit: {
@@ -141,9 +148,12 @@ async function createDeltaDebt(transfer) {
   }
 
   // create DeltaDebt entry
-  let dd = getFactory().newResource(config.NS, 'DeltaDebt', transfer.id);
+  let dd = getFactory().newResource(config.NS, 'DeltaDebt', transfer.transactionId);
   dd.transfer = transfer;
   dd.created = transfer.timestamp;
+  dd.due = new Date(
+    dd.created.getTime() +
+      config.debit.debitDueDuration(dd.created.getYear()));
   dd.amount = debtAmount;
   dd.deptPos = debtAmount;
   dd.owner = transfer.senderAccount.member;
