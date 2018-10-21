@@ -4,3 +4,9 @@ query selectExpiredPendingTransfers {
       SELECT net.sardex.interlace.PendingTransfer
           WHERE ((expires <= _$now) AND (state == 'Pending'))
 }
+query selectDeltaDebt {
+  description: "select all open debts"
+  statement:
+      SELECT net.sardex.interlace.DeltaDebt
+        WHERE ((deptPos > 0) and ()
+}

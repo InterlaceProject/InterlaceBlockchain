@@ -41,6 +41,7 @@ abstract transaction Transfer {
   // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
   --> Account senderAccount
   --> Account recipientAccount
+  o DateTime timestamp
 }
 
 transaction CreditTransfer extends Transfer {}
@@ -52,13 +53,16 @@ transaction DebitTransfer extends Transfer {}
 @returns(AcknowledgeStatus)
 transaction DebitTransferAcknowledge {
   --> PendingTransfer transfer
+  o DateTime timestamp
   //add user signature for production
 }
 
 //transaction initalizing the chain
 transaction InitBlockchain {}
 
-transaction CleanupPendingTransfers {}
+transaction CleanupPendingTransfers {
+  o DateTime currentDate
+}
 
 /////////////////////////////////////////////////////////////////////
 // ENUMS !! should be in synch with enum.js !!
@@ -131,12 +135,13 @@ asset PendingTransfer identified by otp {
   o TransactionStatus state
 }
 
-asset DeltaDebt identified by id/*??*/ {
-  o String id
+asset DeltaDebt /*identified by id*/ {
+  //o String id //needed?
   o DateTime created //try
   o DateTime due
   o Double amount // original amount
   o Double deptPos // missing amount
+  o Member owner // owner of debt
   --> Transfer transfer
 }
 

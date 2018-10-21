@@ -106,13 +106,17 @@ async function CreditTransfer(transfer) {
 /**
  * do the actual money moving
  * @param {net.sardex.interlace.Transfer} transfer
- * @transaction
  */
 async function moveMoney(transfer) {
   // move money
   transfer.senderAccount.balance -= transfer.amount;
   transfer.recipientAccount.balance += transfer.amount;
   transfer.recipientAccount.availableCapacity -= transfer.amount;
+
+  //DeltaDebt entry added
+  if (transfer.senderAccount.balance < 0) createDeltaDebt(transfer);
+  // clear open DeltaDebt amount
+  if (transfer.recipientAccount.balance < 0) clearDebt(transfer);
 
   //get account type registry
   let arSA = await getAssetRegistry(transfer.senderAccount.getFullyQualifiedType());
@@ -123,6 +127,41 @@ async function moveMoney(transfer) {
   await arRA.update(transfer.recipientAccount);
 }
 
+/**
+ * create debt entry in order to enforce
+ * payment after due date
+ * @param {net.sardex.interlace.Transfer} transfer
+ */
+function createDeltaDebt(transfer) {
+  let debtAmount = transfer.amount;
+
+  // if balance has been positive only put the actual "lended" amount
+  if ((transfer.senderAccount.balance + debtAmount) >= 0) {
+    debtAmount = -transfer.senderAccount.balance;
+  }
+
+  // create DeltaDebt entry
+  let dd = getFactory().newResource(config.NS, 'DeltaDebt');
+  dd.transfer = transfer;
+  dd.created = transfer.timestamp;
+  dd.amount = debtAmount;
+  dd.deptPos = debtAmount;
+  dd.owner = transfer.senderAccount.member;
+
+  try {
+    let ddReg = await getAssetRegistry(config.NS + '.DeltaDebt');
+    await ddReg.add(dd);
+  } catch (error) {
+    throw new Error('write error: ' + error.toString());
+  }
+}
+
+/**
+ * clear debt from unpaid debt registered in DeltaDebt
+ * @param {net.sardex.interlace.Transfer} transfer
+ */
+function clearDebt(transfer) {
+}
 
 /**
  * some basic checks for credit/debit
@@ -227,7 +266,7 @@ async function DebitTransferAcknowledge(ack) {
   }
 
   // varify if pending transaction has been expired
-  if (new Date() >= pT.expires) {
+  if (ack.timestamp >= pT.expires) {
     //update state from Pending to Rejected
     await updatePendingTransaction(pT, TransactionStatus.Expired);
 
@@ -278,9 +317,8 @@ async function DebitTransferAcknowledge(ack) {
  * @transaction
  */
 async function CleanupPendingTransfers(transfer) {
-  //TODO: maybe read lifetime_otps from ledger?
   let expiredPending =
-    await query('selectExpiredPendingTransfers', {now: (new Date())});
+    await query('selectExpiredPendingTransfers', {now: (transfer.currentDate)});
   let aR = await getAssetRegistry(config.NS + '.PendingTransfer');
 
   // change all states to expired
@@ -314,7 +352,7 @@ function simplehash(s) {
  * just a quick solution
  */
 function getOTP(transfer) {
-  return simplehash(transfer.id.toString());
+  return simplehash(transfer.toString());
 }
 
 /**
@@ -330,7 +368,7 @@ async function insertPendingTransfer(transfer) {
   let pT = factory.newResource(config.NS, 'PendingTransfer', otp);
   pT.transfer = transfer;
   pT.state = TransactionStatus.Pending;
-  pT.created = new Date();
+  pT.created = transfer.timestamp;
   pT.expires = new Date(pT.created.getTime() + config.debit.lifetime_otps);
   pT.otp = otp;
 
