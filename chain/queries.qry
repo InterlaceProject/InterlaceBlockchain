@@ -8,5 +8,5 @@ query selectDeltaDebt {
   description: "select all open debts"
   statement:
       SELECT net.sardex.interlace.DeltaDebt
-        WHERE ((deptPos > 0) and (owner == _$member))
+        WHERE ((deptPos > 0) AND (owner == _$member))
 }
