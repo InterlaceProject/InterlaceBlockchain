@@ -114,9 +114,9 @@ async function moveMoney(transfer) {
   transfer.recipientAccount.availableCapacity -= transfer.amount;
 
   //DeltaDebt entry added
-  if (transfer.senderAccount.balance < 0) createDeltaDebt(transfer);
+  if (transfer.senderAccount.balance < 0) await createDeltaDebt(transfer);
   // clear open DeltaDebt amount
-  if (transfer.recipientAccount.balance < 0) clearDebt(transfer);
+  if (transfer.recipientAccount.balance < 0) await clearDebt(transfer);
 
   //get account type registry
   let arSA = await getAssetRegistry(transfer.senderAccount.getFullyQualifiedType());
