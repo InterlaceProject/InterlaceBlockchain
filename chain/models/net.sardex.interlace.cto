@@ -133,8 +133,8 @@ asset PendingTransfer identified by otp {
   o TransactionStatus state
 }
 
-asset DeltaDebt /*identified by id*/ {
-  //o String id //needed?
+asset DeltaDebt identified by id {
+  o String id //needed?
   o DateTime created //try
   o DateTime due
   o Double amount // original amount

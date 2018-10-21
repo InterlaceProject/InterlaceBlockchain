@@ -141,7 +141,7 @@ function createDeltaDebt(transfer) {
   }
 
   // create DeltaDebt entry
-  let dd = getFactory().newResource(config.NS, 'DeltaDebt');
+  let dd = getFactory().newResource(config.NS, 'DeltaDebt', transfer.id);
   dd.transfer = transfer;
   dd.created = transfer.timestamp;
   dd.amount = debtAmount;
