@@ -132,7 +132,7 @@ async function moveMoney(transfer) {
  * payment after due date
  * @param {net.sardex.interlace.Transfer} transfer
  */
-function createDeltaDebt(transfer) {
+async function createDeltaDebt(transfer) {
   let debtAmount = transfer.amount;
 
   // if balance has been positive only put the actual "lended" amount
@@ -160,7 +160,7 @@ function createDeltaDebt(transfer) {
  * clear debt from unpaid debt registered in DeltaDebt
  * @param {net.sardex.interlace.Transfer} transfer
  */
-function clearDebt(transfer) {
+async function clearDebt(transfer) {
 }
 
 /**
