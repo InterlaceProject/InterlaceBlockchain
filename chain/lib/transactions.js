@@ -183,14 +183,13 @@ async function clearDebt(transfer) {
         // look needs to stop
         openDelta[i].deptPos -= clearAmount;
         clearAmount = 0;
-        i++; //make slice work
       } else {
         // debt at pos i can be cleared completely
         // loop needs to continue
-        openDelta[i].deptPos = 0;
         clearAmount -= openDelta[i].deptPos;
-        i++;
+        openDelta[i].deptPos = 0;
       }
+      i++;
     }
   }
   // fix all deptPos entries which where changed
