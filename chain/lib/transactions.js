@@ -180,7 +180,7 @@ async function clearDebt(transfer) {
     while (clearAmount > 0 && i < openDelta.length) { // loop while we have an open amount
       if (openDelta[i].deptPos >= clearAmount) {
         // debt at pos i can only be cleared partly
-        // look needs to stop
+        // loop needs to stop
         openDelta[i].deptPos -= clearAmount;
         clearAmount = 0;
       } else {
@@ -191,9 +191,10 @@ async function clearDebt(transfer) {
       }
       i++;
     }
+
+    // fix all deptPos entries which where changed
+    await ddR.updateAll(openDelta.slice(0, i));
   }
-  // fix all deptPos entries which where changed
-  await ddR.updateAll(openDelta.slice(0, i));
 }
 
 /**
