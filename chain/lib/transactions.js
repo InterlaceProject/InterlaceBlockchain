@@ -176,7 +176,7 @@ async function clearDebt(transfer) {
   let ddR = await getAssetRegistry(config.NS + '.DeltaDebt');
 
   let i = 0, clearAmount = transfer.amount;
-  if (openDelta !== null && openDelta.length > 0) { // only if response is usabe
+  if (openDelta !== null && i < openDelta.length) { // only if response is usabe
     while (clearAmount > 0 && i < openDelta.length) { // loop while we have an open amount
       if (openDelta[i].deptPos >= clearAmount) {
         // debt at pos i can only be cleared partly
