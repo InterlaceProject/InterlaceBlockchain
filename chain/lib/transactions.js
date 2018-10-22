@@ -155,7 +155,7 @@ async function createDeltaDebt(transfer) {
       config.debit.debitDueDuration(dd.created.getYear()));
   dd.amount = debtAmount;
   dd.deptPos = debtAmount;
-  dd.ownerId = transfer.senderAccount.member.memberID;
+  dd.debitorID = transfer.senderAccount.member.memberID;
 
   try {
     let ddReg = await getAssetRegistry(config.NS + '.DeltaDebt');
@@ -170,6 +170,31 @@ async function createDeltaDebt(transfer) {
  * @param {net.sardex.interlace.Transfer} transfer
  */
 async function clearDebt(transfer) {
+  let openDelta =
+    await query('selectDeltaDebt', {ID: (transfer.recipientAccount.member.memberID)});
+  // get open debt ordered by date ascending!!
+  let ddR = await getAssetRegistry(config.NS + '.DeltaDebt');
+
+  let i = 0, clearAmount = transfer.amount;
+  if (openDelta !== null && openDelta.length > 0) { // only if response is usabe
+    while (clearAmount > 0 && i < openDelta.length) { // loop while we have an open amount
+      if (openDelta[i].deptPos >= clearAmount) {
+        // debt at pos i can only be cleared partly
+        // look needs to stop
+        openDelta[i].deptPos -= clearAmount;
+        clearAmount = 0;
+        i++; //make slice work
+      } else {
+        // debt at pos i can be cleared completely
+        // loop needs to continue
+        openDelta[i].deptPos = 0;
+        clearAmount -= openDelta[i].deptPos;
+        i++;
+      }
+    }
+  }
+  // fix all deptPos entries which where changed
+  await ddR.updateAll(openDelta.slice(0, i));
 }
 
 /**
