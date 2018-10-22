@@ -172,8 +172,6 @@ async function createDeltaDebt(transfer) {
 async function clearDebt(transfer) {
   let openDelta =
     await query('selectDeltaDebt', {ID: (transfer.recipientAccount.member.memberID)});
-  // get open debt ordered by date ascending!!
-  let ddR = await getAssetRegistry(config.NS + '.DeltaDebt');
 
   let i = 0, clearAmount = transfer.amount;
   if (openDelta !== null && openDelta.length > 0) { // only if response is usabe
@@ -192,6 +190,8 @@ async function clearDebt(transfer) {
       i++;
     }
 
+    // get open debt ordered by date ascending!!
+    let ddR = await getAssetRegistry(config.NS + '.DeltaDebt');
     // fix all deptPos entries which where changed
     await ddR.updateAll(openDelta.slice(0, i));
   }
