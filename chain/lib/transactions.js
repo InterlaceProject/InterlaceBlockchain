@@ -149,14 +149,13 @@ async function createDeltaDebt(transfer) {
 
   // create DeltaDebt entry
   let dd = getFactory().newResource(config.NS, 'DeltaDebt', transfer.transactionId);
-  dd.transfer = transfer;
   dd.created = transfer.timestamp;
   dd.due = new Date(
     dd.created.getTime() +
       config.debit.debitDueDuration(dd.created.getYear()));
   dd.amount = debtAmount;
   dd.deptPos = debtAmount;
-  dd.owner = transfer.senderAccount.member;
+  dd.ownerId = transfer.senderAccount.member.memberID;
 
   try {
     let ddReg = await getAssetRegistry(config.NS + '.DeltaDebt');

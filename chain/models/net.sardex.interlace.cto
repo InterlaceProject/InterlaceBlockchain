@@ -139,8 +139,7 @@ asset DeltaDebt identified by id {
   o DateTime due
   o Double amount // original amount
   o Double deptPos // missing amount
-  o Member owner // owner of debt
-  o Transfer transfer
+  o String debitorID // "owner" of debt
 }
 
 /////////////////////////////////////////////////////////////////////
