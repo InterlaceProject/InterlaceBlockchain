@@ -38,6 +38,8 @@ export class IndividualComponent implements OnInit {
   memberID = new FormControl('', Validators.required);
   email = new FormControl('', Validators.required);
   phone = new FormControl('', Validators.required);
+  activeGroup = new FormControl('', Validators.required);
+  capacity = new FormControl('', Validators.required);
 
 
   constructor(public serviceIndividual: IndividualService, fb: FormBuilder) {
@@ -47,7 +49,9 @@ export class IndividualComponent implements OnInit {
       employedBy: this.employedBy,
       memberID: this.memberID,
       email: this.email,
-      phone: this.phone
+      phone: this.phone,
+      activeGroup: this.activeGroup,
+      capacity: this.capacity
     });
   };
 
@@ -109,7 +113,9 @@ export class IndividualComponent implements OnInit {
       'employedBy': this.employedBy.value,
       'memberID': this.memberID.value,
       'email': this.email.value,
-      'phone': this.phone.value
+      'phone': this.phone.value,
+      'activeGroup': this.activeGroup.value,
+      'capacity': this.capacity.value
     };
 
     this.myForm.setValue({
@@ -118,7 +124,9 @@ export class IndividualComponent implements OnInit {
       'employedBy': null,
       'memberID': null,
       'email': null,
-      'phone': null
+      'phone': null,
+      'activeGroup': null,
+      'capacity': null
     });
 
     return this.serviceIndividual.addParticipant(this.participant)
@@ -131,7 +139,9 @@ export class IndividualComponent implements OnInit {
         'employedBy': null,
         'memberID': null,
         'email': null,
-        'phone': null
+        'phone': null,
+        'activeGroup': null,
+        'capacity': null
       });
       this.loadAll(); 
     })
@@ -152,7 +162,9 @@ export class IndividualComponent implements OnInit {
       'surName': this.surName.value,
       'employedBy': this.employedBy.value,
       'email': this.email.value,
-      'phone': this.phone.value
+      'phone': this.phone.value,
+      'activeGroup': this.activeGroup.value,
+      'capacity': this.capacity.value
     };
 
     return this.serviceIndividual.updateParticipant(form.get('memberID').value, this.participant)
@@ -208,7 +220,9 @@ export class IndividualComponent implements OnInit {
         'employedBy': null,
         'memberID': null,
         'email': null,
-        'phone': null
+        'phone': null,
+        'activeGroup': null,
+        'capacity': null
       };
 
       if (result.firstName) {
@@ -247,6 +261,18 @@ export class IndividualComponent implements OnInit {
         formObject.phone = null;
       }
 
+      if (result.activeGroup) {
+        formObject.activeGroup = result.activeGroup;
+      } else {
+        formObject.activeGroup = null;
+      }
+
+      if (result.capacity) {
+        formObject.capacity = result.capacity;
+      } else {
+        formObject.capacity = null;
+      }
+
       this.myForm.setValue(formObject);
     })
     .catch((error) => {
@@ -268,7 +294,9 @@ export class IndividualComponent implements OnInit {
       'employedBy': null,
       'memberID': null,
       'email': null,
-      'phone': null
+      'phone': null,
+      'activeGroup': null,
+      'capacity': null
     });
   }
 }

@@ -58,7 +58,9 @@ transaction DebitTransferAcknowledge {
 //transaction initalizing the chain
 transaction InitBlockchain {}
 
-transaction CleanupPendingTransfers {}
+transaction CleanupPendingTransfers {
+  o DateTime currentDate
+}
 
 /////////////////////////////////////////////////////////////////////
 // ENUMS !! should be in synch with enum.js !!
@@ -129,6 +131,15 @@ asset PendingTransfer identified by otp {
   o String rejectionReason optional
   o DebitTransfer transfer
   o TransactionStatus state
+}
+
+asset DeltaDebt identified by id {
+  o String id //needed?
+  o DateTime created //try
+  o DateTime due
+  o Double amount // original amount
+  o Double deptPos // missing amount
+  o String debitorID // "owner" of debt
 }
 
 /////////////////////////////////////////////////////////////////////

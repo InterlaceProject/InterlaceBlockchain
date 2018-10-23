@@ -81,6 +81,16 @@
 
             
               <div class="form-group text-left">
+                <label for="availableCapacity">availableCapacity</label>
+                
+                  <input formControlName="availableCapacity" type="number" step='any' class="form-control">
+                
+              </div>
+            
+          
+
+            
+              <div class="form-group text-left">
                 <label for="member">member</label>
                 
                     <textarea formControlName="member" class="form-control" rows="3"></textarea>
@@ -177,6 +187,15 @@
             </div>
           
             <div class="form-group text-left">
+              <label for="availableCapacity">availableCapacity</label>
+              
+              
+                <input [ngModel]="availableCapacity" formControlName="availableCapacity" type="number" step='any' class="form-control">
+              
+
+            </div>
+          
+            <div class="form-group text-left">
               <label for="member">member</label>
               
               
@@ -264,6 +283,8 @@
             
                 <th class="info">balance</th>
             
+                <th class="info">availableCapacity</th>
+            
                 <th class="info">member</th>
             
               <th class="info-actions">Actions</th>
@@ -278,6 +299,8 @@
                 <td class="asset-properties">{{asset.unit}}</td>
             
                 <td class="asset-properties">{{asset.balance}}</td>
+            
+                <td class="asset-properties">{{asset.availableCapacity}}</td>
             
                 <td class="asset-properties">{{asset.member}}</td>
             

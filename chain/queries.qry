@@ -1,6 +1,13 @@
 query selectExpiredPendingTransfers {
-  description: "select all expired transfer"
+  description: "select all expired transfer which are still in state pending"
   statement:
       SELECT net.sardex.interlace.PendingTransfer
-          WHERE ((expires <= _$now) AND (state == 'Pending'))
+       WHERE ((expires <= _$now) AND (state == 'Pending'))
+}
+query selectDeltaDebt {
+  description: "select all open debts"
+  statement:
+      SELECT net.sardex.interlace.DeltaDebt
+       WHERE ((deptPos > 0) AND (debitorID == _$ID))
+       ORDER BY [created ASC]  
 }

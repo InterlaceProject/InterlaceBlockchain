@@ -14,16 +14,16 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { SysAccountService } from './SysAccount.service';
+import { DeltaDebtService } from './DeltaDebt.service';
 import 'rxjs/add/operator/toPromise';
 
 @Component({
-  selector: 'app-sysaccount',
-  templateUrl: './SysAccount.component.html',
-  styleUrls: ['./SysAccount.component.css'],
-  providers: [SysAccountService]
+  selector: 'app-deltadebt',
+  templateUrl: './DeltaDebt.component.html',
+  styleUrls: ['./DeltaDebt.component.css'],
+  providers: [DeltaDebtService]
 })
-export class SysAccountComponent implements OnInit {
+export class DeltaDebtComponent implements OnInit {
 
   myForm: FormGroup;
 
@@ -32,19 +32,21 @@ export class SysAccountComponent implements OnInit {
   private currentId;
   private errorMessage;
 
-  accountID = new FormControl('', Validators.required);
-  unit = new FormControl('', Validators.required);
-  balance = new FormControl('', Validators.required);
-  availableCapacity = new FormControl('', Validators.required);
-  member = new FormControl('', Validators.required);
+  id = new FormControl('', Validators.required);
+  created = new FormControl('', Validators.required);
+  due = new FormControl('', Validators.required);
+  amount = new FormControl('', Validators.required);
+  deptPos = new FormControl('', Validators.required);
+  debitorID = new FormControl('', Validators.required);
 
-  constructor(public serviceSysAccount: SysAccountService, fb: FormBuilder) {
+  constructor(public serviceDeltaDebt: DeltaDebtService, fb: FormBuilder) {
     this.myForm = fb.group({
-      accountID: this.accountID,
-      unit: this.unit,
-      balance: this.balance,
-      availableCapacity: this.availableCapacity,
-      member: this.member
+      id: this.id,
+      created: this.created,
+      due: this.due,
+      amount: this.amount,
+      deptPos: this.deptPos,
+      debitorID: this.debitorID
     });
   };
 
@@ -54,7 +56,7 @@ export class SysAccountComponent implements OnInit {
 
   loadAll(): Promise<any> {
     const tempList = [];
-    return this.serviceSysAccount.getAll()
+    return this.serviceDeltaDebt.getAll()
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
@@ -101,32 +103,35 @@ export class SysAccountComponent implements OnInit {
 
   addAsset(form: any): Promise<any> {
     this.asset = {
-      $class: 'net.sardex.interlace.SysAccount',
-      'accountID': this.accountID.value,
-      'unit': this.unit.value,
-      'balance': this.balance.value,
-      'availableCapacity': this.availableCapacity.value,
-      'member': this.member.value
+      $class: 'net.sardex.interlace.DeltaDebt',
+      'id': this.id.value,
+      'created': this.created.value,
+      'due': this.due.value,
+      'amount': this.amount.value,
+      'deptPos': this.deptPos.value,
+      'debitorID': this.debitorID.value
     };
 
     this.myForm.setValue({
-      'accountID': null,
-      'unit': null,
-      'balance': null,
-      'availableCapacity': null,
-      'member': null
+      'id': null,
+      'created': null,
+      'due': null,
+      'amount': null,
+      'deptPos': null,
+      'debitorID': null
     });
 
-    return this.serviceSysAccount.addAsset(this.asset)
+    return this.serviceDeltaDebt.addAsset(this.asset)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
       this.myForm.setValue({
-        'accountID': null,
-        'unit': null,
-        'balance': null,
-        'availableCapacity': null,
-        'member': null
+        'id': null,
+        'created': null,
+        'due': null,
+        'amount': null,
+        'deptPos': null,
+        'debitorID': null
       });
       this.loadAll();
     })
@@ -142,14 +147,15 @@ export class SysAccountComponent implements OnInit {
 
   updateAsset(form: any): Promise<any> {
     this.asset = {
-      $class: 'net.sardex.interlace.SysAccount',
-      'unit': this.unit.value,
-      'balance': this.balance.value,
-      'availableCapacity': this.availableCapacity.value,
-      'member': this.member.value
+      $class: 'net.sardex.interlace.DeltaDebt',
+      'created': this.created.value,
+      'due': this.due.value,
+      'amount': this.amount.value,
+      'deptPos': this.deptPos.value,
+      'debitorID': this.debitorID.value
     };
 
-    return this.serviceSysAccount.updateAsset(form.get('accountID').value, this.asset)
+    return this.serviceDeltaDebt.updateAsset(form.get('id').value, this.asset)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
@@ -169,7 +175,7 @@ export class SysAccountComponent implements OnInit {
 
   deleteAsset(): Promise<any> {
 
-    return this.serviceSysAccount.deleteAsset(this.currentId)
+    return this.serviceDeltaDebt.deleteAsset(this.currentId)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
@@ -192,46 +198,53 @@ export class SysAccountComponent implements OnInit {
 
   getForm(id: any): Promise<any> {
 
-    return this.serviceSysAccount.getAsset(id)
+    return this.serviceDeltaDebt.getAsset(id)
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
       const formObject = {
-        'accountID': null,
-        'unit': null,
-        'balance': null,
-        'availableCapacity': null,
-        'member': null
+        'id': null,
+        'created': null,
+        'due': null,
+        'amount': null,
+        'deptPos': null,
+        'debitorID': null
       };
 
-      if (result.accountID) {
-        formObject.accountID = result.accountID;
+      if (result.id) {
+        formObject.id = result.id;
       } else {
-        formObject.accountID = null;
+        formObject.id = null;
       }
 
-      if (result.unit) {
-        formObject.unit = result.unit;
+      if (result.created) {
+        formObject.created = result.created;
       } else {
-        formObject.unit = null;
+        formObject.created = null;
       }
 
-      if (result.balance) {
-        formObject.balance = result.balance;
+      if (result.due) {
+        formObject.due = result.due;
       } else {
-        formObject.balance = null;
+        formObject.due = null;
       }
 
-      if (result.availableCapacity) {
-        formObject.availableCapacity = result.availableCapacity;
+      if (result.amount) {
+        formObject.amount = result.amount;
       } else {
-        formObject.availableCapacity = null;
+        formObject.amount = null;
       }
 
-      if (result.member) {
-        formObject.member = result.member;
+      if (result.deptPos) {
+        formObject.deptPos = result.deptPos;
       } else {
-        formObject.member = null;
+        formObject.deptPos = null;
+      }
+
+      if (result.debitorID) {
+        formObject.debitorID = result.debitorID;
+      } else {
+        formObject.debitorID = null;
       }
 
       this.myForm.setValue(formObject);
@@ -250,11 +263,12 @@ export class SysAccountComponent implements OnInit {
 
   resetForm(): void {
     this.myForm.setValue({
-      'accountID': null,
-      'unit': null,
-      'balance': null,
-      'availableCapacity': null,
-      'member': null
+      'id': null,
+      'created': null,
+      'due': null,
+      'amount': null,
+      'deptPos': null,
+      'debitorID': null
       });
   }
 

@@ -19,23 +19,31 @@ import { HomeComponent } from './home/home.component';
 
 import { SysAccountComponent } from './SysAccount/SysAccount.component';
 import { CCAccountComponent } from './CCAccount/CCAccount.component';
+import { PendingTransferComponent } from './PendingTransfer/PendingTransfer.component';
+import { DeltaDebtComponent } from './DeltaDebt/DeltaDebt.component';
 
 import { SubscriberComponent } from './Subscriber/Subscriber.component';
 import { IndividualComponent } from './Individual/Individual.component';
 
 import { CreditTransferComponent } from './CreditTransfer/CreditTransfer.component';
 import { DebitTransferComponent } from './DebitTransfer/DebitTransfer.component';
+import { DebitTransferAcknowledgeComponent } from './DebitTransferAcknowledge/DebitTransferAcknowledge.component';
 import { InitBlockchainComponent } from './InitBlockchain/InitBlockchain.component';
+import { CleanupPendingTransfersComponent } from './CleanupPendingTransfers/CleanupPendingTransfers.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'SysAccount', component: SysAccountComponent },
   { path: 'CCAccount', component: CCAccountComponent },
+  { path: 'PendingTransfer', component: PendingTransferComponent },
+  { path: 'DeltaDebt', component: DeltaDebtComponent },
   { path: 'Subscriber', component: SubscriberComponent },
   { path: 'Individual', component: IndividualComponent },
   { path: 'CreditTransfer', component: CreditTransferComponent },
   { path: 'DebitTransfer', component: DebitTransferComponent },
+  { path: 'DebitTransferAcknowledge', component: DebitTransferAcknowledgeComponent },
   { path: 'InitBlockchain', component: InitBlockchainComponent },
+  { path: 'CleanupPendingTransfers', component: CleanupPendingTransfersComponent },
   { path: '**', redirectTo: '' }
 ];
 
