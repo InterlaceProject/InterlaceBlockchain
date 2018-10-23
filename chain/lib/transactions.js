@@ -123,7 +123,7 @@ async function moveMoney(transfer) {
   //DeltaDebt entry added
   if (transfer.senderAccount.balance < 0) await createDeltaDebt(transfer);
   // clear open DeltaDebt amount
-  if (transfer.recipientAccount.balance < 0) await clearDebt(transfer);
+  if ((transfer.recipientAccount.balance - transfer.amount) < 0) await clearDebt(transfer);
 
   //get account type registry
   let arSA = await getAssetRegistry(transfer.senderAccount.getFullyQualifiedType());
@@ -177,23 +177,25 @@ async function clearDebt(transfer) {
   if (openDelta !== null && openDelta.length > 0) { // only if response is usabe
     while (clearAmount > 0 && i < openDelta.length) { // loop while we have an open amount
       if (openDelta[i].deptPos >= clearAmount) {
-        // debt at pos i can only be cleared partly
+        // use fully amount of transfer to pay debt at pos i
         // loop needs to stop
         openDelta[i].deptPos -= clearAmount;
         clearAmount = 0;
       } else {
         // debt at pos i can be cleared completely
-        // loop needs to continue
+        // loop needs to continue to cover possible other open debts
         clearAmount -= openDelta[i].deptPos;
         openDelta[i].deptPos = 0;
       }
       i++;
     }
 
-    // get open debt ordered by date ascending!!
-    let ddR = await getAssetRegistry(config.NS + '.DeltaDebt');
-    // fix all deptPos entries which where changed
-    await ddR.updateAll(openDelta.slice(0, i));
+    if (i > 0) {
+      // get open debt ordered by date ascending!!
+      let ddR = await getAssetRegistry(config.NS + '.DeltaDebt');
+      // fix all deptPos entries which where changed
+      await ddR.updateAll(openDelta.slice(0, i));
+    }
   }
 }
 
