@@ -120,9 +120,11 @@ async function moveMoney(transfer) {
   transfer.recipientAccount.balance += transfer.amount;
   transfer.recipientAccount.availableCapacity -= transfer.amount;
 
-  //DeltaDebt entry added
+  // check balance if DeltaDebt entry needs to be added
+  // !after amount has been substracted!
   if (transfer.senderAccount.balance < 0) await createDeltaDebt(transfer);
-  // clear open DeltaDebt amount
+  // check balance if clearing and open DeltaDebt is necessary
+  // !before amount has been added!
   if ((transfer.recipientAccount.balance - transfer.amount) < 0) await clearDebt(transfer);
 
   //get account type registry
