@@ -14,16 +14,16 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { SysAccountService } from './SysAccount.service';
+import { PendingTransferService } from './PendingTransfer.service';
 import 'rxjs/add/operator/toPromise';
 
 @Component({
-  selector: 'app-sysaccount',
-  templateUrl: './SysAccount.component.html',
-  styleUrls: ['./SysAccount.component.css'],
-  providers: [SysAccountService]
+  selector: 'app-pendingtransfer',
+  templateUrl: './PendingTransfer.component.html',
+  styleUrls: ['./PendingTransfer.component.css'],
+  providers: [PendingTransferService]
 })
-export class SysAccountComponent implements OnInit {
+export class PendingTransferComponent implements OnInit {
 
   myForm: FormGroup;
 
@@ -32,19 +32,21 @@ export class SysAccountComponent implements OnInit {
   private currentId;
   private errorMessage;
 
-  accountID = new FormControl('', Validators.required);
-  unit = new FormControl('', Validators.required);
-  balance = new FormControl('', Validators.required);
-  availableCapacity = new FormControl('', Validators.required);
-  member = new FormControl('', Validators.required);
+  otp = new FormControl('', Validators.required);
+  created = new FormControl('', Validators.required);
+  expires = new FormControl('', Validators.required);
+  rejectionReason = new FormControl('', Validators.required);
+  transfer = new FormControl('', Validators.required);
+  state = new FormControl('', Validators.required);
 
-  constructor(public serviceSysAccount: SysAccountService, fb: FormBuilder) {
+  constructor(public servicePendingTransfer: PendingTransferService, fb: FormBuilder) {
     this.myForm = fb.group({
-      accountID: this.accountID,
-      unit: this.unit,
-      balance: this.balance,
-      availableCapacity: this.availableCapacity,
-      member: this.member
+      otp: this.otp,
+      created: this.created,
+      expires: this.expires,
+      rejectionReason: this.rejectionReason,
+      transfer: this.transfer,
+      state: this.state
     });
   };
 
@@ -54,7 +56,7 @@ export class SysAccountComponent implements OnInit {
 
   loadAll(): Promise<any> {
     const tempList = [];
-    return this.serviceSysAccount.getAll()
+    return this.servicePendingTransfer.getAll()
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
@@ -101,32 +103,35 @@ export class SysAccountComponent implements OnInit {
 
   addAsset(form: any): Promise<any> {
     this.asset = {
-      $class: 'net.sardex.interlace.SysAccount',
-      'accountID': this.accountID.value,
-      'unit': this.unit.value,
-      'balance': this.balance.value,
-      'availableCapacity': this.availableCapacity.value,
-      'member': this.member.value
+      $class: 'net.sardex.interlace.PendingTransfer',
+      'otp': this.otp.value,
+      'created': this.created.value,
+      'expires': this.expires.value,
+      'rejectionReason': this.rejectionReason.value,
+      'transfer': this.transfer.value,
+      'state': this.state.value
     };
 
     this.myForm.setValue({
-      'accountID': null,
-      'unit': null,
-      'balance': null,
-      'availableCapacity': null,
-      'member': null
+      'otp': null,
+      'created': null,
+      'expires': null,
+      'rejectionReason': null,
+      'transfer': null,
+      'state': null
     });
 
-    return this.serviceSysAccount.addAsset(this.asset)
+    return this.servicePendingTransfer.addAsset(this.asset)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
       this.myForm.setValue({
-        'accountID': null,
-        'unit': null,
-        'balance': null,
-        'availableCapacity': null,
-        'member': null
+        'otp': null,
+        'created': null,
+        'expires': null,
+        'rejectionReason': null,
+        'transfer': null,
+        'state': null
       });
       this.loadAll();
     })
@@ -142,14 +147,15 @@ export class SysAccountComponent implements OnInit {
 
   updateAsset(form: any): Promise<any> {
     this.asset = {
-      $class: 'net.sardex.interlace.SysAccount',
-      'unit': this.unit.value,
-      'balance': this.balance.value,
-      'availableCapacity': this.availableCapacity.value,
-      'member': this.member.value
+      $class: 'net.sardex.interlace.PendingTransfer',
+      'created': this.created.value,
+      'expires': this.expires.value,
+      'rejectionReason': this.rejectionReason.value,
+      'transfer': this.transfer.value,
+      'state': this.state.value
     };
 
-    return this.serviceSysAccount.updateAsset(form.get('accountID').value, this.asset)
+    return this.servicePendingTransfer.updateAsset(form.get('otp').value, this.asset)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
@@ -169,7 +175,7 @@ export class SysAccountComponent implements OnInit {
 
   deleteAsset(): Promise<any> {
 
-    return this.serviceSysAccount.deleteAsset(this.currentId)
+    return this.servicePendingTransfer.deleteAsset(this.currentId)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
@@ -192,46 +198,53 @@ export class SysAccountComponent implements OnInit {
 
   getForm(id: any): Promise<any> {
 
-    return this.serviceSysAccount.getAsset(id)
+    return this.servicePendingTransfer.getAsset(id)
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
       const formObject = {
-        'accountID': null,
-        'unit': null,
-        'balance': null,
-        'availableCapacity': null,
-        'member': null
+        'otp': null,
+        'created': null,
+        'expires': null,
+        'rejectionReason': null,
+        'transfer': null,
+        'state': null
       };
 
-      if (result.accountID) {
-        formObject.accountID = result.accountID;
+      if (result.otp) {
+        formObject.otp = result.otp;
       } else {
-        formObject.accountID = null;
+        formObject.otp = null;
       }
 
-      if (result.unit) {
-        formObject.unit = result.unit;
+      if (result.created) {
+        formObject.created = result.created;
       } else {
-        formObject.unit = null;
+        formObject.created = null;
       }
 
-      if (result.balance) {
-        formObject.balance = result.balance;
+      if (result.expires) {
+        formObject.expires = result.expires;
       } else {
-        formObject.balance = null;
+        formObject.expires = null;
       }
 
-      if (result.availableCapacity) {
-        formObject.availableCapacity = result.availableCapacity;
+      if (result.rejectionReason) {
+        formObject.rejectionReason = result.rejectionReason;
       } else {
-        formObject.availableCapacity = null;
+        formObject.rejectionReason = null;
       }
 
-      if (result.member) {
-        formObject.member = result.member;
+      if (result.transfer) {
+        formObject.transfer = result.transfer;
       } else {
-        formObject.member = null;
+        formObject.transfer = null;
+      }
+
+      if (result.state) {
+        formObject.state = result.state;
+      } else {
+        formObject.state = null;
       }
 
       this.myForm.setValue(formObject);
@@ -250,11 +263,12 @@ export class SysAccountComponent implements OnInit {
 
   resetForm(): void {
     this.myForm.setValue({
-      'accountID': null,
-      'unit': null,
-      'balance': null,
-      'availableCapacity': null,
-      'member': null
+      'otp': null,
+      'created': null,
+      'expires': null,
+      'rejectionReason': null,
+      'transfer': null,
+      'state': null
       });
   }
 

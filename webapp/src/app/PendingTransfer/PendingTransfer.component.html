@@ -27,19 +27,9 @@
 
             
               <div class="form-group text-left">
-                <label for="creditLimit">creditLimit</label>
+                <label for="otp">otp</label>
                 
-                  <input formControlName="creditLimit" type="number" step='any' class="form-control">
-                
-              </div>
-            
-          
-
-            
-              <div class="form-group text-left">
-                <label for="creditLimitDate">creditLimitDate</label>
-                
-                  <input formControlName="creditLimitDate" type="text" class="form-control">
+                  <input formControlName="otp" type="text" class="form-control">
                 
               </div>
             
@@ -47,9 +37,9 @@
 
             
               <div class="form-group text-left">
-                <label for="upperLimit">upperLimit</label>
+                <label for="created">created</label>
                 
-                  <input formControlName="upperLimit" type="number" step='any' class="form-control">
+                  <input formControlName="created" type="text" class="form-control">
                 
               </div>
             
@@ -57,73 +47,89 @@
 
             
               <div class="form-group text-left">
-                <label for="accountID">accountID</label>
+                <label for="expires">expires</label>
                 
-                  <input formControlName="accountID" type="text" class="form-control">
+                  <input formControlName="expires" type="text" class="form-control">
                 
               </div>
             
           
 
             
-              <label for="unit">unit</label>
+              <div class="form-group text-left">
+                <label for="rejectionReason">rejectionReason</label>
+                
+                  <input formControlName="rejectionReason" type="text" class="form-control">
+                
+              </div>
+            
+          
+
+            
+              <div class="form-group text-left">
+                <label for="transfer">transfer</label>
+                
+                    <textarea formControlName="transfer" class="form-control" rows="3"></textarea>
+                
+              </div>
+            
+          
+
+            
+              <label for="state">state</label>
               <div class="checkbox">
                 
                   <label>
                     <input
                       
-                        formControlName="unit"
+                        formControlName="state"
                       
-                      name="unit"
-                      value="Euro"
+                      name="state"
+                      value="Pending"
                       type="radio"
                       
                     />
-                    Euro
+                    Pending
                   </label>
                 
                   <label>
                     <input
                       
-                        formControlName="unit"
+                        formControlName="state"
                       
-                      name="unit"
-                      value="SRD"
+                      name="state"
+                      value="Performed"
                       type="radio"
                       
                     />
-                    SRD
+                    Performed
                   </label>
                 
-              </div>
-            
-          
-
-            
-              <div class="form-group text-left">
-                <label for="balance">balance</label>
+                  <label>
+                    <input
+                      
+                        formControlName="state"
+                      
+                      name="state"
+                      value="Rejected"
+                      type="radio"
+                      
+                    />
+                    Rejected
+                  </label>
                 
-                  <input formControlName="balance" type="number" step='any' class="form-control">
-                
-              </div>
-            
-          
-
-            
-              <div class="form-group text-left">
-                <label for="availableCapacity">availableCapacity</label>
-                
-                  <input formControlName="availableCapacity" type="number" step='any' class="form-control">
-                
-              </div>
-            
-          
-
-            
-              <div class="form-group text-left">
-                <label for="member">member</label>
-                
-                    <textarea formControlName="member" class="form-control" rows="3"></textarea>
+                  <label>
+                    <input
+                      
+                        formControlName="state"
+                      
+                      name="state"
+                      value="Expired"
+                      type="radio"
+                      
+                    />
+                    Expired
+                  </label>
                 
               </div>
             
@@ -156,43 +162,54 @@
 
           
             <div class="form-group text-left">
-              <label for="creditLimit">creditLimit</label>
+              <label for="otp">otp</label>
               
               
-                <input [ngModel]="creditLimit" formControlName="creditLimit" type="number" step='any' class="form-control">
-              
-
-            </div>
-          
-            <div class="form-group text-left">
-              <label for="creditLimitDate">creditLimitDate</label>
-              
-              
-                <input [ngModel]="creditLimitDate"formControlName="creditLimitDate" type="text" class="form-control">
+                <input [ngModel]="otp" formControlName="otp" class="form-control" disabled="disabled">  
               
 
             </div>
           
             <div class="form-group text-left">
-              <label for="upperLimit">upperLimit</label>
+              <label for="created">created</label>
               
               
-                <input [ngModel]="upperLimit" formControlName="upperLimit" type="number" step='any' class="form-control">
-              
-
-            </div>
-          
-            <div class="form-group text-left">
-              <label for="accountID">accountID</label>
-              
-              
-                <input [ngModel]="accountID" formControlName="accountID" class="form-control" disabled="disabled">  
+                <input [ngModel]="created"formControlName="created" type="text" class="form-control">
               
 
             </div>
           
             <div class="form-group text-left">
-              <label for="unit">unit</label>
+              <label for="expires">expires</label>
+              
+              
+                <input [ngModel]="expires"formControlName="expires" type="text" class="form-control">
+              
+
+            </div>
+          
+            <div class="form-group text-left">
+              <label for="rejectionReason">rejectionReason</label>
+              
+              
+                <input [ngModel]="rejectionReason"formControlName="rejectionReason" type="text" class="form-control">
+              
+
+            </div>
+          
+            <div class="form-group text-left">
+              <label for="transfer">transfer</label>
+              
+              
+                
+                  <textarea [ngModel]="transfer" formControlName="transfer" class="form-control" rows="3"></textarea>
+                
+              
+
+            </div>
+          
+            <div class="form-group text-left">
+              <label for="state">state</label>
               
               
                 
@@ -202,62 +219,61 @@
                       <label>
                         <input
                           
-                            formControlName="unit"
-                            [ngModel]="unit"
+                            formControlName="state"
+                            [ngModel]="state"
                           
-                          name="unit"
-                          value="Euro"
+                          name="state"
+                          value="Pending"
                           type="radio"
                           
                         />
-                        Euro
+                        Pending
                       </label>
                     
                       <label>
                         <input
                           
-                            formControlName="unit"
-                            [ngModel]="unit"
+                            formControlName="state"
+                            [ngModel]="state"
                           
-                          name="unit"
-                          value="SRD"
+                          name="state"
+                          value="Performed"
                           type="radio"
                           
                         />
-                        SRD
+                        Performed
+                      </label>
+                    
+                      <label>
+                        <input
+                          
+                            formControlName="state"
+                            [ngModel]="state"
+                          
+                          name="state"
+                          value="Rejected"
+                          type="radio"
+                          
+                        />
+                        Rejected
+                      </label>
+                    
+                      <label>
+                        <input
+                          
+                            formControlName="state"
+                            [ngModel]="state"
+                          
+                          name="state"
+                          value="Expired"
+                          type="radio"
+                          
+                        />
+                        Expired
                       </label>
                     
                     </div>
                   </div>
-                
-              
-
-            </div>
-          
-            <div class="form-group text-left">
-              <label for="balance">balance</label>
-              
-              
-                <input [ngModel]="balance" formControlName="balance" type="number" step='any' class="form-control">
-              
-
-            </div>
-          
-            <div class="form-group text-left">
-              <label for="availableCapacity">availableCapacity</label>
-              
-              
-                <input [ngModel]="availableCapacity" formControlName="availableCapacity" type="number" step='any' class="form-control">
-              
-
-            </div>
-          
-            <div class="form-group text-left">
-              <label for="member">member</label>
-              
-              
-                
-                  <textarea [ngModel]="member" formControlName="member" class="form-control" rows="3"></textarea>
                 
               
 
@@ -314,7 +330,7 @@
   
   <div class="row">
     <div class="col-md-9">
-        <h1 class="asset-title" id='assetName'>CCAccount</h1>
+        <h1 class="asset-title" id='assetName'>PendingTransfer</h1>
     </div>
     <div class="col-md-3">
       <button (click)="resetForm()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAssetModal">
@@ -334,21 +350,17 @@
         <thead class="thead">
           <tr class="thead-cols">
             
-                <th class="info">creditLimit</th>
+                <th class="info">otp</th>
             
-                <th class="info">creditLimitDate</th>
+                <th class="info">created</th>
             
-                <th class="info">upperLimit</th>
+                <th class="info">expires</th>
             
-                <th class="info">accountID</th>
+                <th class="info">rejectionReason</th>
             
-                <th class="info">unit</th>
+                <th class="info">transfer</th>
             
-                <th class="info">balance</th>
-            
-                <th class="info">availableCapacity</th>
-            
-                <th class="info">member</th>
+                <th class="info">state</th>
             
               <th class="info-actions">Actions</th>
           </tr>
@@ -357,24 +369,20 @@
           <tr *ngFor="let asset of allAssets">
 
             
-                <td class="asset-properties">{{asset.creditLimit}}</td>
+                <td class="asset-properties">{{asset.otp}}</td>
             
-                <td class="asset-properties">{{asset.creditLimitDate}}</td>
+                <td class="asset-properties">{{asset.created}}</td>
             
-                <td class="asset-properties">{{asset.upperLimit}}</td>
+                <td class="asset-properties">{{asset.expires}}</td>
             
-                <td class="asset-properties">{{asset.accountID}}</td>
+                <td class="asset-properties">{{asset.rejectionReason}}</td>
             
-                <td class="asset-properties">{{asset.unit}}</td>
+                <td class="asset-properties">{{asset.transfer}}</td>
             
-                <td class="asset-properties">{{asset.balance}}</td>
-            
-                <td class="asset-properties">{{asset.availableCapacity}}</td>
-            
-                <td class="asset-properties">{{asset.member}}</td>
+                <td class="asset-properties">{{asset.state}}</td>
             
             <td>
-              <button (click)="getForm(asset.accountID);" type="button" class="btn btn-update" data-toggle="modal" data-target="#updateAssetModal">
+              <button (click)="getForm(asset.otp);" type="button" class="btn btn-update" data-toggle="modal" data-target="#updateAssetModal">
                   <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                   width="12.8px" height="12.8px" viewBox="0 0 30.7 30.7" style="enable-background:new 0 0 30.7 30.7;" xml:space="preserve">
                <g>
@@ -387,7 +395,7 @@
                </svg>
               </button>
 
-              <button (click)="setId(asset.accountID);" type="button" class="btn btn-delete" data-toggle="modal" data-target="#deleteAssetModal">
+              <button (click)="setId(asset.otp);" type="button" class="btn btn-delete" data-toggle="modal" data-target="#deleteAssetModal">
                   <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                   width="13.8px" height="16px" viewBox="0 0 65.9 76.2" style="enable-background:new 0 0 65.9 76.2;" xml:space="preserve">
                <path d="M42.8,60.2V22.6c0-1.7-1.3-3-3-3s-3,1.3-3,3v37.6c0,1.7,1.3,3,3,3S42.8,61.9,42.8,60.2z M29.1,60.2V22.6c0-1.7-1.3-3-3-3

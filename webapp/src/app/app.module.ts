@@ -23,13 +23,17 @@ import { HomeComponent } from './home/home.component';
 
 import { SysAccountComponent } from './SysAccount/SysAccount.component';
 import { CCAccountComponent } from './CCAccount/CCAccount.component';
+import { PendingTransferComponent } from './PendingTransfer/PendingTransfer.component';
+import { DeltaDebtComponent } from './DeltaDebt/DeltaDebt.component';
 
 import { SubscriberComponent } from './Subscriber/Subscriber.component';
 import { IndividualComponent } from './Individual/Individual.component';
 
 import { CreditTransferComponent } from './CreditTransfer/CreditTransfer.component';
 import { DebitTransferComponent } from './DebitTransfer/DebitTransfer.component';
+import { DebitTransferAcknowledgeComponent } from './DebitTransferAcknowledge/DebitTransferAcknowledge.component';
 import { InitBlockchainComponent } from './InitBlockchain/InitBlockchain.component';
+import { CleanupPendingTransfersComponent } from './CleanupPendingTransfers/CleanupPendingTransfers.component';
 
   @NgModule({
   declarations: [
@@ -37,11 +41,15 @@ import { InitBlockchainComponent } from './InitBlockchain/InitBlockchain.compone
     HomeComponent,
     SysAccountComponent,
     CCAccountComponent,
+    PendingTransferComponent,
+    DeltaDebtComponent,
     SubscriberComponent,
     IndividualComponent,
     CreditTransferComponent,
     DebitTransferComponent,
-    InitBlockchainComponent
+    DebitTransferAcknowledgeComponent,
+    InitBlockchainComponent,
+    CleanupPendingTransfersComponent
   ],
   imports: [
     BrowserModule,

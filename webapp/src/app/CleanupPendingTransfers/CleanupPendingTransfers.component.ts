@@ -14,37 +14,34 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { SysAccountService } from './SysAccount.service';
+import { CleanupPendingTransfersService } from './CleanupPendingTransfers.service';
 import 'rxjs/add/operator/toPromise';
 
 @Component({
-  selector: 'app-sysaccount',
-  templateUrl: './SysAccount.component.html',
-  styleUrls: ['./SysAccount.component.css'],
-  providers: [SysAccountService]
+  selector: 'app-cleanuppendingtransfers',
+  templateUrl: './CleanupPendingTransfers.component.html',
+  styleUrls: ['./CleanupPendingTransfers.component.css'],
+  providers: [CleanupPendingTransfersService]
 })
-export class SysAccountComponent implements OnInit {
+export class CleanupPendingTransfersComponent implements OnInit {
 
   myForm: FormGroup;
 
-  private allAssets;
-  private asset;
+  private allTransactions;
+  private Transaction;
   private currentId;
   private errorMessage;
 
-  accountID = new FormControl('', Validators.required);
-  unit = new FormControl('', Validators.required);
-  balance = new FormControl('', Validators.required);
-  availableCapacity = new FormControl('', Validators.required);
-  member = new FormControl('', Validators.required);
+  currentDate = new FormControl('', Validators.required);
+  transactionId = new FormControl('', Validators.required);
+  timestamp = new FormControl('', Validators.required);
 
-  constructor(public serviceSysAccount: SysAccountService, fb: FormBuilder) {
+
+  constructor(private serviceCleanupPendingTransfers: CleanupPendingTransfersService, fb: FormBuilder) {
     this.myForm = fb.group({
-      accountID: this.accountID,
-      unit: this.unit,
-      balance: this.balance,
-      availableCapacity: this.availableCapacity,
-      member: this.member
+      currentDate: this.currentDate,
+      transactionId: this.transactionId,
+      timestamp: this.timestamp
     });
   };
 
@@ -54,14 +51,14 @@ export class SysAccountComponent implements OnInit {
 
   loadAll(): Promise<any> {
     const tempList = [];
-    return this.serviceSysAccount.getAll()
+    return this.serviceCleanupPendingTransfers.getAll()
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
-      result.forEach(asset => {
-        tempList.push(asset);
+      result.forEach(transaction => {
+        tempList.push(transaction);
       });
-      this.allAssets = tempList;
+      this.allTransactions = tempList;
     })
     .catch((error) => {
       if (error === 'Server error') {
@@ -76,7 +73,7 @@ export class SysAccountComponent implements OnInit {
 
 	/**
    * Event handler for changing the checked state of a checkbox (handles array enumeration values)
-   * @param {String} name - the name of the asset field to update
+   * @param {String} name - the name of the transaction field to update
    * @param {any} value - the enumeration value for which to toggle the checked state
    */
   changeArrayValue(name: string, value: any): void {
@@ -90,90 +87,77 @@ export class SysAccountComponent implements OnInit {
 
 	/**
 	 * Checkbox helper, determining whether an enumeration value should be selected or not (for array enumeration values
-   * only). This is used for checkboxes in the asset updateDialog.
-   * @param {String} name - the name of the asset field to check
+   * only). This is used for checkboxes in the transaction updateDialog.
+   * @param {String} name - the name of the transaction field to check
    * @param {any} value - the enumeration value to check for
-   * @return {Boolean} whether the specified asset field contains the provided value
+   * @return {Boolean} whether the specified transaction field contains the provided value
    */
   hasArrayValue(name: string, value: any): boolean {
     return this[name].value.indexOf(value) !== -1;
   }
 
-  addAsset(form: any): Promise<any> {
-    this.asset = {
-      $class: 'net.sardex.interlace.SysAccount',
-      'accountID': this.accountID.value,
-      'unit': this.unit.value,
-      'balance': this.balance.value,
-      'availableCapacity': this.availableCapacity.value,
-      'member': this.member.value
+  addTransaction(form: any): Promise<any> {
+    this.Transaction = {
+      $class: 'net.sardex.interlace.CleanupPendingTransfers',
+      'currentDate': this.currentDate.value,
+      'transactionId': this.transactionId.value,
+      'timestamp': this.timestamp.value
     };
 
     this.myForm.setValue({
-      'accountID': null,
-      'unit': null,
-      'balance': null,
-      'availableCapacity': null,
-      'member': null
+      'currentDate': null,
+      'transactionId': null,
+      'timestamp': null
     });
 
-    return this.serviceSysAccount.addAsset(this.asset)
+    return this.serviceCleanupPendingTransfers.addTransaction(this.Transaction)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
       this.myForm.setValue({
-        'accountID': null,
-        'unit': null,
-        'balance': null,
-        'availableCapacity': null,
-        'member': null
+        'currentDate': null,
+        'transactionId': null,
+        'timestamp': null
       });
-      this.loadAll();
-    })
-    .catch((error) => {
-      if (error === 'Server error') {
-          this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
-      } else {
-          this.errorMessage = error;
-      }
-    });
-  }
-
-
-  updateAsset(form: any): Promise<any> {
-    this.asset = {
-      $class: 'net.sardex.interlace.SysAccount',
-      'unit': this.unit.value,
-      'balance': this.balance.value,
-      'availableCapacity': this.availableCapacity.value,
-      'member': this.member.value
-    };
-
-    return this.serviceSysAccount.updateAsset(form.get('accountID').value, this.asset)
-    .toPromise()
-    .then(() => {
-      this.errorMessage = null;
-      this.loadAll();
     })
     .catch((error) => {
       if (error === 'Server error') {
         this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
-      } else if (error === '404 - Not Found') {
-        this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
       } else {
         this.errorMessage = error;
       }
     });
   }
 
+  updateTransaction(form: any): Promise<any> {
+    this.Transaction = {
+      $class: 'net.sardex.interlace.CleanupPendingTransfers',
+      'currentDate': this.currentDate.value,
+      'timestamp': this.timestamp.value
+    };
 
-  deleteAsset(): Promise<any> {
-
-    return this.serviceSysAccount.deleteAsset(this.currentId)
+    return this.serviceCleanupPendingTransfers.updateTransaction(form.get('transactionId').value, this.Transaction)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
-      this.loadAll();
+    })
+    .catch((error) => {
+      if (error === 'Server error') {
+        this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
+      } else if (error === '404 - Not Found') {
+      this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
+      } else {
+        this.errorMessage = error;
+      }
+    });
+  }
+
+  deleteTransaction(): Promise<any> {
+
+    return this.serviceCleanupPendingTransfers.deleteTransaction(this.currentId)
+    .toPromise()
+    .then(() => {
+      this.errorMessage = null;
     })
     .catch((error) => {
       if (error === 'Server error') {
@@ -192,46 +176,32 @@ export class SysAccountComponent implements OnInit {
 
   getForm(id: any): Promise<any> {
 
-    return this.serviceSysAccount.getAsset(id)
+    return this.serviceCleanupPendingTransfers.getTransaction(id)
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
       const formObject = {
-        'accountID': null,
-        'unit': null,
-        'balance': null,
-        'availableCapacity': null,
-        'member': null
+        'currentDate': null,
+        'transactionId': null,
+        'timestamp': null
       };
 
-      if (result.accountID) {
-        formObject.accountID = result.accountID;
+      if (result.currentDate) {
+        formObject.currentDate = result.currentDate;
       } else {
-        formObject.accountID = null;
+        formObject.currentDate = null;
       }
 
-      if (result.unit) {
-        formObject.unit = result.unit;
+      if (result.transactionId) {
+        formObject.transactionId = result.transactionId;
       } else {
-        formObject.unit = null;
+        formObject.transactionId = null;
       }
 
-      if (result.balance) {
-        formObject.balance = result.balance;
+      if (result.timestamp) {
+        formObject.timestamp = result.timestamp;
       } else {
-        formObject.balance = null;
-      }
-
-      if (result.availableCapacity) {
-        formObject.availableCapacity = result.availableCapacity;
-      } else {
-        formObject.availableCapacity = null;
-      }
-
-      if (result.member) {
-        formObject.member = result.member;
-      } else {
-        formObject.member = null;
+        formObject.timestamp = null;
       }
 
       this.myForm.setValue(formObject);
@@ -241,7 +211,7 @@ export class SysAccountComponent implements OnInit {
       if (error === 'Server error') {
         this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
       } else if (error === '404 - Not Found') {
-        this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
+      this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
       } else {
         this.errorMessage = error;
       }
@@ -250,12 +220,9 @@ export class SysAccountComponent implements OnInit {
 
   resetForm(): void {
     this.myForm.setValue({
-      'accountID': null,
-      'unit': null,
-      'balance': null,
-      'availableCapacity': null,
-      'member': null
-      });
+      'currentDate': null,
+      'transactionId': null,
+      'timestamp': null
+    });
   }
-
 }

@@ -34,20 +34,22 @@ export class CCAccountComponent implements OnInit {
 
   creditLimit = new FormControl('', Validators.required);
   creditLimitDate = new FormControl('', Validators.required);
-  availableBalance = new FormControl('', Validators.required);
+  upperLimit = new FormControl('', Validators.required);
   accountID = new FormControl('', Validators.required);
   unit = new FormControl('', Validators.required);
   balance = new FormControl('', Validators.required);
+  availableCapacity = new FormControl('', Validators.required);
   member = new FormControl('', Validators.required);
 
   constructor(public serviceCCAccount: CCAccountService, fb: FormBuilder) {
     this.myForm = fb.group({
       creditLimit: this.creditLimit,
       creditLimitDate: this.creditLimitDate,
-      availableBalance: this.availableBalance,
+      upperLimit: this.upperLimit,
       accountID: this.accountID,
       unit: this.unit,
       balance: this.balance,
+      availableCapacity: this.availableCapacity,
       member: this.member
     });
   };
@@ -108,20 +110,22 @@ export class CCAccountComponent implements OnInit {
       $class: 'net.sardex.interlace.CCAccount',
       'creditLimit': this.creditLimit.value,
       'creditLimitDate': this.creditLimitDate.value,
-      'availableBalance': this.availableBalance.value,
+      'upperLimit': this.upperLimit.value,
       'accountID': this.accountID.value,
       'unit': this.unit.value,
       'balance': this.balance.value,
+      'availableCapacity': this.availableCapacity.value,
       'member': this.member.value
     };
 
     this.myForm.setValue({
       'creditLimit': null,
       'creditLimitDate': null,
-      'availableBalance': null,
+      'upperLimit': null,
       'accountID': null,
       'unit': null,
       'balance': null,
+      'availableCapacity': null,
       'member': null
     });
 
@@ -132,10 +136,11 @@ export class CCAccountComponent implements OnInit {
       this.myForm.setValue({
         'creditLimit': null,
         'creditLimitDate': null,
-        'availableBalance': null,
+        'upperLimit': null,
         'accountID': null,
         'unit': null,
         'balance': null,
+        'availableCapacity': null,
         'member': null
       });
       this.loadAll();
@@ -155,9 +160,10 @@ export class CCAccountComponent implements OnInit {
       $class: 'net.sardex.interlace.CCAccount',
       'creditLimit': this.creditLimit.value,
       'creditLimitDate': this.creditLimitDate.value,
-      'availableBalance': this.availableBalance.value,
+      'upperLimit': this.upperLimit.value,
       'unit': this.unit.value,
       'balance': this.balance.value,
+      'availableCapacity': this.availableCapacity.value,
       'member': this.member.value
     };
 
@@ -211,10 +217,11 @@ export class CCAccountComponent implements OnInit {
       const formObject = {
         'creditLimit': null,
         'creditLimitDate': null,
-        'availableBalance': null,
+        'upperLimit': null,
         'accountID': null,
         'unit': null,
         'balance': null,
+        'availableCapacity': null,
         'member': null
       };
 
@@ -230,10 +237,10 @@ export class CCAccountComponent implements OnInit {
         formObject.creditLimitDate = null;
       }
 
-      if (result.availableBalance) {
-        formObject.availableBalance = result.availableBalance;
+      if (result.upperLimit) {
+        formObject.upperLimit = result.upperLimit;
       } else {
-        formObject.availableBalance = null;
+        formObject.upperLimit = null;
       }
 
       if (result.accountID) {
@@ -252,6 +259,12 @@ export class CCAccountComponent implements OnInit {
         formObject.balance = result.balance;
       } else {
         formObject.balance = null;
+      }
+
+      if (result.availableCapacity) {
+        formObject.availableCapacity = result.availableCapacity;
+      } else {
+        formObject.availableCapacity = null;
       }
 
       if (result.member) {
@@ -278,10 +291,11 @@ export class CCAccountComponent implements OnInit {
     this.myForm.setValue({
       'creditLimit': null,
       'creditLimitDate': null,
-      'availableBalance': null,
+      'upperLimit': null,
       'accountID': null,
       'unit': null,
       'balance': null,
+      'availableCapacity': null,
       'member': null
       });
   }

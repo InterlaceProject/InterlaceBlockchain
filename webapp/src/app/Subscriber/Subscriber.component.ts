@@ -37,6 +37,8 @@ export class SubscriberComponent implements OnInit {
   memberID = new FormControl('', Validators.required);
   email = new FormControl('', Validators.required);
   phone = new FormControl('', Validators.required);
+  activeGroup = new FormControl('', Validators.required);
+  capacity = new FormControl('', Validators.required);
 
 
   constructor(public serviceSubscriber: SubscriberService, fb: FormBuilder) {
@@ -45,7 +47,9 @@ export class SubscriberComponent implements OnInit {
       entityAddress: this.entityAddress,
       memberID: this.memberID,
       email: this.email,
-      phone: this.phone
+      phone: this.phone,
+      activeGroup: this.activeGroup,
+      capacity: this.capacity
     });
   };
 
@@ -106,7 +110,9 @@ export class SubscriberComponent implements OnInit {
       'entityAddress': this.entityAddress.value,
       'memberID': this.memberID.value,
       'email': this.email.value,
-      'phone': this.phone.value
+      'phone': this.phone.value,
+      'activeGroup': this.activeGroup.value,
+      'capacity': this.capacity.value
     };
 
     this.myForm.setValue({
@@ -114,7 +120,9 @@ export class SubscriberComponent implements OnInit {
       'entityAddress': null,
       'memberID': null,
       'email': null,
-      'phone': null
+      'phone': null,
+      'activeGroup': null,
+      'capacity': null
     });
 
     return this.serviceSubscriber.addParticipant(this.participant)
@@ -126,7 +134,9 @@ export class SubscriberComponent implements OnInit {
         'entityAddress': null,
         'memberID': null,
         'email': null,
-        'phone': null
+        'phone': null,
+        'activeGroup': null,
+        'capacity': null
       });
       this.loadAll(); 
     })
@@ -146,7 +156,9 @@ export class SubscriberComponent implements OnInit {
       'entityName': this.entityName.value,
       'entityAddress': this.entityAddress.value,
       'email': this.email.value,
-      'phone': this.phone.value
+      'phone': this.phone.value,
+      'activeGroup': this.activeGroup.value,
+      'capacity': this.capacity.value
     };
 
     return this.serviceSubscriber.updateParticipant(form.get('memberID').value, this.participant)
@@ -201,7 +213,9 @@ export class SubscriberComponent implements OnInit {
         'entityAddress': null,
         'memberID': null,
         'email': null,
-        'phone': null
+        'phone': null,
+        'activeGroup': null,
+        'capacity': null
       };
 
       if (result.entityName) {
@@ -234,6 +248,18 @@ export class SubscriberComponent implements OnInit {
         formObject.phone = null;
       }
 
+      if (result.activeGroup) {
+        formObject.activeGroup = result.activeGroup;
+      } else {
+        formObject.activeGroup = null;
+      }
+
+      if (result.capacity) {
+        formObject.capacity = result.capacity;
+      } else {
+        formObject.capacity = null;
+      }
+
       this.myForm.setValue(formObject);
     })
     .catch((error) => {
@@ -254,7 +280,9 @@ export class SubscriberComponent implements OnInit {
       'entityAddress': null,
       'memberID': null,
       'email': null,
-      'phone': null
+      'phone': null,
+      'activeGroup': null,
+      'capacity': null
     });
   }
 }

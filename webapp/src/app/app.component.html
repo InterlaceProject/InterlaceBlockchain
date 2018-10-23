@@ -14,8 +14,8 @@
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
-        <p class="network-name">sardex-open-network@0.0.1.bna</p>
-        <p class="navbar-brand">interlace-app</p>
+        <p class="network-name">sardex-open-network@0.2.9.bna</p>
+        <p class="navbar-brand">interlace-webapp</p>
       </div>
       <ul class="nav navbar-nav">
         <li class="dropdown active">
@@ -25,6 +25,10 @@
               <li><a [routerLink]="['/SysAccount']">SysAccount</a></li>
               
               <li><a [routerLink]="['/CCAccount']">CCAccount</a></li>
+              
+              <li><a [routerLink]="['/PendingTransfer']">PendingTransfer</a></li>
+              
+              <li><a [routerLink]="['/DeltaDebt']">DeltaDebt</a></li>
               
             </ul>
         </li>
@@ -46,7 +50,11 @@
           
           <li><a [routerLink]="['/DebitTransfer']">DebitTransfer</a></li>
           
+          <li><a [routerLink]="['/DebitTransferAcknowledge']">DebitTransferAcknowledge</a></li>
+          
           <li><a [routerLink]="['/InitBlockchain']">InitBlockchain</a></li>
+          
+          <li><a [routerLink]="['/CleanupPendingTransfers']">CleanupPendingTransfers</a></li>
           
         </ul>
     </li>
