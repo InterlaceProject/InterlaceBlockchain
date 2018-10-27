@@ -1,88 +1,17 @@
 'use strict';
 
-var config = {
-  NS: 'net.sardex.interlace',
-  debit: {
-    quick_transfer_amount: 100,
-    lifetime_otps: (1000*3600*2), //in milliseconds => 2 hours
-    //lifetime_otps: (1000), //in milliseconds => 1 Second, for testing
-    debitDueDuration: function (year) {
-      let dayMLSeconds = 1000*3600*24;
-      if (year%4 === 0 && (year%100 !== 0 || year%400 === 0)) {
-        return 366 * dayMLSeconds;
-      }
-      return 365 * dayMLSeconds;
-    }
-  },
-  accTTree: {
-    credit: {
-      SRD: {
-        'CC': ['CC', 'DOMU', 'MIRROR'],
-        'DOMU': ['CC'],
-        'MIRROR' : ['CC']
-      }
-    },
-    debit: {
-      SRD: {
-        'CC': ['CC']
-      },
-      EUR: {
-        'Income': ['Bisoo']
-      }
-    }
-  },
-  ttTree: {
-    credit: {
-      SRD: {
-        company: ['company', 'employee', 'MNGR', 'full'],
-        full: ['company', 'employee', 'MNGR', 'full'],
-        MNGR: ['retail', 'company', 'employee', 'MNGR', 'full'],
-        employee: ['retail', 'company', 'full'],
-        consumer_verified: ['retail', 'company', 'full']
-      }
-    },
-    debit: {
-      SRD: {
-        'retail': 'retail',
-        'company': 'company',
-        'full': 'full',
-        'MNGR': 'MNGR'
-      },
-      EUR: {
-        'retail': 'retail',
-        'full': 'full'
-      }
-    }
-  }
-};
-
 /**
  * get back transfer type or null if undefined
  */
 function tt(operation, unit, memberGroup) {
-  return treeSearch(operation, unit, memberGroup, config.ttTree);
+  return configSearch(operation, unit, memberGroup, config.ttTree);
 }
 
 /**
  * get back account connectivity or null if undefined
  */
 function accT(operation, unit, accountType) {
-  return treeSearch(operation, unit, accountType, config.accTTree);
-}
-
-/**
- * Helper Function for tt and accT
- */
-function treeSearch(p1, p2, p3, tree) {
-  if (tree[p1] !== undefined) {
-    if (tree[p1][p2] !== undefined) {
-      if (tree[p1][p2][p3] !== undefined) {
-        return tree[p1][p2][p3];
-      }
-    }
-  }
-
-  return null;
+  return configSearch(operation, unit, accountType, config.accTTree);
 }
 
 /**
@@ -123,7 +52,7 @@ async function moveMoney(transfer) {
   // check balance if DeltaDebt entry needs to be added
   // !after amount has been substracted!
   if (transfer.senderAccount.balance < 0) await createDeltaDebt(transfer);
-  // check balance if clearing and open DeltaDebt is necessary
+  // check balance if clearing an open DeltaDebt is necessary
   // !before amount has been added!
   if ((transfer.recipientAccount.balance - transfer.amount) < 0) await clearDebt(transfer);
 
@@ -159,12 +88,8 @@ async function createDeltaDebt(transfer) {
   dd.deptPos = debtAmount;
   dd.debitorID = transfer.senderAccount.member.memberID;
 
-  try {
-    let ddReg = await getAssetRegistry(config.NS + '.DeltaDebt');
-    await ddReg.add(dd);
-  } catch (error) {
-    throw new Error('write error: ' + error.toString());
-  }
+  let ddReg = await getAssetRegistry(config.NS + '.DeltaDebt');
+  await ddReg.add(dd);
 }
 
 /**
@@ -172,27 +97,28 @@ async function createDeltaDebt(transfer) {
  * @param {net.sardex.interlace.Transfer} transfer
  */
 async function clearDebt(transfer) {
+  // query result sorted by "oldest" first
   let openDelta =
     await query('selectDeltaDebt', {ID: (transfer.recipientAccount.member.memberID)});
 
   let i = 0, clearAmount = transfer.amount;
-  if (openDelta !== null && openDelta.length > 0) { // only if response is usabe
+  if (openDelta !== null && openDelta.length > 0) { // only if response is usabel
     while (clearAmount > 0 && i < openDelta.length) { // loop while we have an open amount
       if (openDelta[i].deptPos >= clearAmount) {
-        // use fully amount of transfer to pay debt at pos i
+        // use fully the amount of transfer to pay debt at pos i
         // loop needs to stop
         openDelta[i].deptPos -= clearAmount;
         clearAmount = 0;
       } else {
         // debt at pos i can be cleared completely
-        // loop needs to continue to cover possible other open debts
+        // loop needs to continue to cover other possibily open debts
         clearAmount -= openDelta[i].deptPos;
         openDelta[i].deptPos = 0;
       }
       i++;
     }
 
-    if (i > 0) {
+    if (i > 0) { //if at least one DeltaDebt was changed
       // get open debt ordered by date ascending!!
       let ddR = await getAssetRegistry(config.NS + '.DeltaDebt');
       // fix all deptPos entries which where changed
@@ -204,18 +130,12 @@ async function clearDebt(transfer) {
 /**
  * some basic checks for credit/debit
  * @param {net.sardex.interlace.Transfer} transfer
- * @transaction
  */
 function checkAmountPlausible(transfer) {
   // some error checking
   if (transfer.amount <= 0) {
     throw new Error('Transfer amount must be a positive value.');
   }
-  //if (transfer.senderAccount.balance < transfer.amount) {
-  //  throw new Error('Transfer amount ' + transfer.amount +
-  //                  ' is bigger than the available balance of ' +
-  //                  transfer.senderAccount.balance);
-  //}
 }
 
 /**
@@ -365,16 +285,6 @@ async function CleanupPendingTransfers(transfer) {
 }
 
 /**
- * create id - quick solution - rethink for production
- * Math.random should be unique because of its seeding algorithm.
- * Convert it to base 36 (numbers + letters), and grab the first 9 characters
- * after the decimal.
- */
-function makeid() {
-  return Math.random().toString(36).substr(2, 20);
-}
-
-/**
  * simple hash function - insecure!!!!
  * @param {String} s
  */
@@ -410,12 +320,9 @@ async function insertPendingTransfer(transfer) {
   pT.expires = new Date(pT.created.getTime() + config.debit.lifetime_otps);
   pT.otp = otp;
 
-  try {
-    let accReg = await getAssetRegistry(config.NS + '.PendingTransfer');
-    await accReg.add(pT);
-  } catch (error) {
-    throw new Error('write error: ' + error.toString());
-  }
+  // write new pending transfer
+  let accReg = await getAssetRegistry(config.NS + '.PendingTransfer');
+  await accReg.add(pT);
 
   return otp;
 }
@@ -432,26 +339,26 @@ async function previewCheck(transfer) {
   let toGroup = toAccount.member.activeGroup;
   let operation = getOperation(transfer);
 
-  //info: debit request
-  //      debitor=buyer=fromAccount
-  //      creditor=seller=toAccount
-  //fix fromGroup for debit request
+  // info: debit request
+  //       debitor=buyer=fromAccount
+  //       creditor=seller=toAccount
+  // fix fromGroup for debit request
   if (operation === Operation.debit) {
-    //from- and to-group taken from creditor
+    // from- and to-group taken from creditor
     fromGroup = toAccount.member.activeGroup;
     toGroup = fromGroup;
   }
 
-  //check equal units
+  // check equal units
   if (fromAccount.unit !== toAccount.unit) {
     throw new Error('Units do not match');
   }
 
-  //determine transfer type
+  // determine transfer type
   let ttCheck = tt(operation, fromAccount.unit, fromGroup);
 
-  if (ttCheck === null) { //like MayStartCredit/DebitOpns
-    //SourceGroupViolation
+  if (ttCheck === null) { // like MayStartCredit/DebitOpns
+    // SourceGroupViolation
     let memberID = fromAccount.member.memberID;
     if (operation === Operation.debit) memberID = toAccount.member.memberID;
 
@@ -460,16 +367,16 @@ async function previewCheck(transfer) {
   }
 
   if (ttCheck.indexOf(toGroup) > -1) { // check for valid group membership
-    //determine connectivity information
+    // determine connectivity information
     let accTCheck = accT(
       'credit',
       fromAccount.unit,
       getAccountType(fromAccount));
 
-    if (accTCheck === null) { //like SourceAccountViolation
+    if (accTCheck === null) { // like SourceAccountViolation
       throw new Error('Source account ' + fromAccount.accountID +
         ' not of the correct type');
-    } else if (accTCheck.indexOf(getAccountType(toAccount)) <= -1) { //check for valid account type
+    } else if (accTCheck.indexOf(getAccountType(toAccount)) <= -1) { // check for valid account type
       throw new Error('Account ' + fromAccount.accountID +
         ' is not in one of these groups ' + accTCheck);
     }
@@ -552,6 +459,7 @@ function availableBalance(account) {
 function canBeSpentBy(account, amount) {
   return availableBalance(account) >= amount;
 }
+
 /**
  * canBeCashedBy as of D3.1 => ASIMSpec
  * returns boolean
@@ -562,6 +470,7 @@ function canBeCashedBy(account, amount) {
   return getAccountType(account) !== AccountType.DOMU &&
           (account.balance + amount) <= account.upperLimit;
 }
+
 /**
  * hasSellCapacityFor as of D3.1 => ASIMSpec
  * returns boolean
