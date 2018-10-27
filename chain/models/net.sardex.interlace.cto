@@ -52,15 +52,13 @@ transaction DebitTransfer extends Transfer {}
 @returns(AcknowledgeStatus)
 transaction DebitTransferAcknowledge {
   --> PendingTransfer transfer
-  //add user signature for production
+  // add user signature for production
 }
 
-//transaction initalizing the chain
+// transaction initalizing the chain
 transaction InitBlockchain {}
-
-transaction CleanupPendingTransfers {
-  o DateTime currentDate
-}
+// set transfer to status expired if validity period has been exceeded
+transaction CleanupPendingTransfers {}
 
 /////////////////////////////////////////////////////////////////////
 // ENUMS !! should be in synch with enum.js !!

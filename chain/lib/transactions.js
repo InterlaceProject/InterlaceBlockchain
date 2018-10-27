@@ -356,7 +356,7 @@ async function DebitTransferAcknowledge(ack) {
  */
 async function CleanupPendingTransfers(transfer) {
   let expiredPending =
-    await query('selectExpiredPendingTransfers', {now: (transfer.currentDate)});
+    await query('selectExpiredPendingTransfers', {now: (transfer.timestamp)});
   let aR = await getAssetRegistry(config.NS + '.PendingTransfer');
 
   // change all states to expired
