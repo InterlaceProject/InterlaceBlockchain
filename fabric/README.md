@@ -17,7 +17,7 @@ The following variable are available:
 
 ### General
 
-* FABRIC_START_TIMEOUT=15
+* FABRIC_START_TIMEOUT=20
 * CHANNELID=interlacechannel
 * CHANNELTX=interlace-channel.tx
 * GENESISBLOCK=interlace-genesis.block
