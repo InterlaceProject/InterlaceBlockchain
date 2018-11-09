@@ -132,8 +132,8 @@ asset PendingTransfer identified by otp {
 }
 
 asset DeltaDebt identified by id {
-  o String id //needed?
-  o DateTime created //try
+  o String id
+  o DateTime created
   o DateTime due
   o Double amount // original amount
   o Double deptPos // missing amount
