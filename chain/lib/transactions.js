@@ -259,7 +259,7 @@ async function DebitTransferAcknowledge(ack) {
       error.toString());
 
     //prepare return message
-    rS.status = TransactionStatus.Expired;
+    rS.status = TransactionStatus.Rejected;
     rS.description = 'Error acknoledging transfer: ' + error.toString();
     return rS; //TODO: raise event
   }
