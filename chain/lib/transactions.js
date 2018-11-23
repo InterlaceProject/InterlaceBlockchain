@@ -28,12 +28,12 @@ async function CreditTransfer(transfer) {
 
   // account limits checks throws error in case of violation
   await accountLimitCheck(
-    transfer.senderAccount,
-    transfer.recipientAccount,
+    transfer.fromAccount,
+    transfer.toAccount,
     transfer.amount);
 
   // check account limits and emits event if violated
-  await checkAccountLimitsAlerts(transfer.senderAccount);
+  await checkAccountLimitsAlerts(transfer.fromAccount);
 
   // perform the transfer
   await moveMoney(transfer);
@@ -45,24 +45,24 @@ async function CreditTransfer(transfer) {
  */
 async function moveMoney(transfer) {
   // move money
-  transfer.senderAccount.balance -= transfer.amount;
-  transfer.recipientAccount.balance += transfer.amount;
-  transfer.recipientAccount.availableCapacity -= transfer.amount;
+  transfer.fromAccount.balance -= transfer.amount;
+  transfer.toAccount.balance += transfer.amount;
+  transfer.toAccount.availableCapacity -= transfer.amount;
 
   // check balance if DeltaDebt entry needs to be added
   // !after amount has been substracted!
-  if (transfer.senderAccount.balance < 0) await createDeltaDebt(transfer);
+  if (transfer.fromAccount.balance < 0) await createDeltaDebt(transfer);
   // check balance if clearing an open DeltaDebt is necessary
   // !before amount has been added!
-  if ((transfer.recipientAccount.balance - transfer.amount) < 0) await clearDebt(transfer);
+  if ((transfer.toAccount.balance - transfer.amount) < 0) await clearDebt(transfer);
 
   //get account type registry
-  let arSA = await getAssetRegistry(transfer.senderAccount.getFullyQualifiedType());
-  let arRA = await getAssetRegistry(transfer.recipientAccount.getFullyQualifiedType());
+  let arSA = await getAssetRegistry(transfer.fromAccount.getFullyQualifiedType());
+  let arRA = await getAssetRegistry(transfer.toAccount.getFullyQualifiedType());
 
   // persist the state of the account as well as accountReceive => append to ledger
-  await arSA.update(transfer.senderAccount);
-  await arRA.update(transfer.recipientAccount);
+  await arSA.update(transfer.fromAccount);
+  await arRA.update(transfer.toAccount);
 }
 
 /**
@@ -74,8 +74,8 @@ async function createDeltaDebt(transfer) {
   let debtAmount = transfer.amount;
 
   // if balance has been positive only put the actual "lended" amount
-  if ((transfer.senderAccount.balance + debtAmount) >= 0) {
-    debtAmount = -transfer.senderAccount.balance;
+  if ((transfer.fromAccount.balance + debtAmount) >= 0) {
+    debtAmount = -transfer.fromAccount.balance;
   }
 
   // create DeltaDebt entry
@@ -86,7 +86,7 @@ async function createDeltaDebt(transfer) {
       config.debit.debitDueDuration(dd.created.getYear()));
   dd.amount = debtAmount;
   dd.deptPos = debtAmount;
-  dd.debitorID = transfer.senderAccount.member.memberID;
+  dd.debitorID = transfer.fromAccount.member.memberID;
 
   let ddReg = await getAssetRegistry(config.NS + '.DeltaDebt');
   await ddReg.add(dd);
@@ -99,7 +99,7 @@ async function createDeltaDebt(transfer) {
 async function clearDebt(transfer) {
   // query result sorted by "oldest" first
   let openDelta =
-    await query('selectDeltaDebt', {ID: (transfer.recipientAccount.member.memberID)});
+    await query('selectDeltaDebt', {ID: (transfer.toAccount.member.memberID)});
 
   let i = 0, clearAmount = transfer.amount;
   if (openDelta !== null && openDelta.length > 0) { // only if response is usabel
@@ -152,8 +152,8 @@ async function DebitTransfer(transfer) {
 
   // account limits checks throws error in case of violation
   await accountLimitCheck(
-    transfer.senderAccount,
-    transfer.recipientAccount,
+    transfer.fromAccount,
+    transfer.toAccount,
     transfer.amount);
 
   // check for immediate transfer possibility
@@ -162,7 +162,7 @@ async function DebitTransfer(transfer) {
     await moveMoney(transfer);
 
     // check account limits and emits event if violated
-    await checkAccountLimitsAlerts(transfer.senderAccount);
+    await checkAccountLimitsAlerts(transfer.fromAccount);
   } else { // requires confirmation
     // add the debit transfer to the pending queue
     let otp = await insertPendingTransfer(transfer);
@@ -176,8 +176,8 @@ async function DebitTransfer(transfer) {
     confirmReq.debitorAccount =
       factory.newRelationship(
         config.NS,
-        transfer.senderAccount.getType(),
-        transfer.senderAccount.accountID);
+        transfer.fromAccount.getType(),
+        transfer.fromAccount.accountID);
 
     // emit the event
     emit(confirmReq);
@@ -239,8 +239,8 @@ async function DebitTransferAcknowledge(ack) {
 
     // account limits checks throws error in case of violation
     await accountLimitCheck(
-      transfer.senderAccount,
-      transfer.recipientAccount,
+      transfer.fromAccount,
+      transfer.toAccount,
       transfer.amount);
 
     //update state from Pending to Performed
@@ -250,7 +250,7 @@ async function DebitTransferAcknowledge(ack) {
     await moveMoney(transfer);
 
     // check account limits and emits event if violated
-    await checkAccountLimitsAlerts(transfer.senderAccount);
+    await checkAccountLimitsAlerts(transfer.fromAccount);
   } catch(error) {
     // fix pending transfer state before returning status
     await updatePendingTransaction(
@@ -333,8 +333,8 @@ async function insertPendingTransfer(transfer) {
  * @param {net.sardex.interlace.Transfer} transfer
  */
 async function previewCheck(transfer) {
-  let fromAccount = transfer.senderAccount;
-  let toAccount = transfer.recipientAccount;
+  let fromAccount = transfer.fromAccount;
+  let toAccount = transfer.toAccount;
   let fromGroup = fromAccount.member.activeGroup;
   let toGroup = toAccount.member.activeGroup;
   let operation = getOperation(transfer);

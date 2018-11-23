@@ -21,8 +21,8 @@ import {Event} from './org.hyperledger.composer.system';
    }
    export abstract class Transfer extends Transaction {
       amount: number;
-      senderAccount: Account;
-      recipientAccount: Account;
+      fromAccount: Account;
+      toAccount: Account;
    }
    export class CreditTransfer extends Transfer {
    }

@@ -39,8 +39,8 @@ participant Individual extends Member {
 abstract transaction Transfer {
   o Double amount
   // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
-  --> Account senderAccount
-  --> Account recipientAccount
+  --> Account fromAccount
+  --> Account toAccount
 }
 
 transaction CreditTransfer extends Transfer {}
