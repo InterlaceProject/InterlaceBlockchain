@@ -172,12 +172,8 @@ async function DebitTransfer(transfer) {
     let factory = getFactory();
     let confirmReq = factory.newEvent(config.NS, 'RequestDebitAcknowledge');
 
-    confirmReq.otp = otp;
-    confirmReq.debitorAccount =
-      factory.newRelationship(
-        config.NS,
-        transfer.fromAccount.getType(),
-        transfer.fromAccount.accountID);
+    confirmReq.transfer =
+      factory.newRelationship(config.NS, "PendingTransfer", otp);
 
     // emit the event
     emit(confirmReq);

@@ -158,8 +158,7 @@ event LimitAlert {
   --> Account account
 }
 event RequestDebitAcknowledge {
-  o String otp
-  --> Account debitorAccount
+  --> PendingTransfer transfer
 }
 event DebitAcknowledgeInvalid { //TODO
   o PendingTransfer pendingTransfer
