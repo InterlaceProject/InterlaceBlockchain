@@ -39,8 +39,8 @@ participant Individual extends Member {
 abstract transaction Transfer {
   o Double amount
   // NB: avvertire l'utente che non possiamo mettere memo causa GDPR
-  --> Account senderAccount
-  --> Account recipientAccount
+  --> Account fromAccount
+  --> Account toAccount
 }
 
 transaction CreditTransfer extends Transfer {}
@@ -158,10 +158,9 @@ event LimitAlert {
   --> Account account
 }
 event RequestDebitAcknowledge {
-  o String otp
-  --> Account debitorAccount
+  --> PendingTransfer transfer
 }
-event DebitAcknowledgeInvalid { //TODO
-  o PendingTransfer pendingTransfer
+event DebitAcknowledgeInvalid {
+  --> PendingTransfer pendingTransfer
   o String message
 }

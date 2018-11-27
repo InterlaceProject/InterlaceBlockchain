@@ -2,9 +2,9 @@
   "$class": "net.sardex.interlace.CreditTransfer",
   "transferLabel": "CreditTransfer",
   "amount": 200,
-  "senderAccount":
+  "fromAccount":
   	"resource:net.sardex.interlace.CCAccount#a1",
-  "recipientAccount":
+  "toAccount":
   	"resource:net.sardex.interlace.CCAccount#a2"
 }
 

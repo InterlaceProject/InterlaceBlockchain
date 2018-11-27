@@ -33,8 +33,8 @@ export class DebitTransferComponent implements OnInit {
   private errorMessage;
 
   amount = new FormControl('', Validators.required);
-  senderAccount = new FormControl('', Validators.required);
-  recipientAccount = new FormControl('', Validators.required);
+  fromAccount = new FormControl('', Validators.required);
+  toAccount = new FormControl('', Validators.required);
   transactionId = new FormControl('', Validators.required);
   timestamp = new FormControl('', Validators.required);
 
@@ -42,8 +42,8 @@ export class DebitTransferComponent implements OnInit {
   constructor(private serviceDebitTransfer: DebitTransferService, fb: FormBuilder) {
     this.myForm = fb.group({
       amount: this.amount,
-      senderAccount: this.senderAccount,
-      recipientAccount: this.recipientAccount,
+      fromAccount: this.fromAccount,
+      toAccount: this.toAccount,
       transactionId: this.transactionId,
       timestamp: this.timestamp
     });
@@ -104,16 +104,16 @@ export class DebitTransferComponent implements OnInit {
     this.Transaction = {
       $class: 'net.sardex.interlace.DebitTransfer',
       'amount': this.amount.value,
-      'senderAccount': this.senderAccount.value,
-      'recipientAccount': this.recipientAccount.value,
+      'fromAccount': this.fromAccount.value,
+      'toAccount': this.toAccount.value,
       'transactionId': this.transactionId.value,
       'timestamp': this.timestamp.value
     };
 
     this.myForm.setValue({
       'amount': null,
-      'senderAccount': null,
-      'recipientAccount': null,
+      'fromAccount': null,
+      'toAccount': null,
       'transactionId': null,
       'timestamp': null
     });
@@ -124,8 +124,8 @@ export class DebitTransferComponent implements OnInit {
       this.errorMessage = null;
       this.myForm.setValue({
         'amount': null,
-        'senderAccount': null,
-        'recipientAccount': null,
+        'fromAccount': null,
+        'toAccount': null,
         'transactionId': null,
         'timestamp': null
       });
@@ -143,8 +143,8 @@ export class DebitTransferComponent implements OnInit {
     this.Transaction = {
       $class: 'net.sardex.interlace.DebitTransfer',
       'amount': this.amount.value,
-      'senderAccount': this.senderAccount.value,
-      'recipientAccount': this.recipientAccount.value,
+      'fromAccount': this.fromAccount.value,
+      'toAccount': this.toAccount.value,
       'timestamp': this.timestamp.value
     };
 
@@ -194,8 +194,8 @@ export class DebitTransferComponent implements OnInit {
       this.errorMessage = null;
       const formObject = {
         'amount': null,
-        'senderAccount': null,
-        'recipientAccount': null,
+        'fromAccount': null,
+        'toAccount': null,
         'transactionId': null,
         'timestamp': null
       };
@@ -206,16 +206,16 @@ export class DebitTransferComponent implements OnInit {
         formObject.amount = null;
       }
 
-      if (result.senderAccount) {
-        formObject.senderAccount = result.senderAccount;
+      if (result.fromAccount) {
+        formObject.fromAccount = result.fromAccount;
       } else {
-        formObject.senderAccount = null;
+        formObject.fromAccount = null;
       }
 
-      if (result.recipientAccount) {
-        formObject.recipientAccount = result.recipientAccount;
+      if (result.toAccount) {
+        formObject.toAccount = result.toAccount;
       } else {
-        formObject.recipientAccount = null;
+        formObject.toAccount = null;
       }
 
       if (result.transactionId) {
@@ -247,8 +247,8 @@ export class DebitTransferComponent implements OnInit {
   resetForm(): void {
     this.myForm.setValue({
       'amount': null,
-      'senderAccount': null,
-      'recipientAccount': null,
+      'fromAccount': null,
+      'toAccount': null,
       'transactionId': null,
       'timestamp': null
     });

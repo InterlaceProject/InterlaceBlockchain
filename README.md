@@ -116,13 +116,13 @@ The *InitBlockchain* transaction is setting up some basic accounts as well as de
 Submit a credit transfer from account *a1* to *a2* with amount of 800 SRD:
 
 ```bash
-composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.CreditTransfer", "amount": 800, "senderAccount": "resource:net.sardex.interlace.CCAccount#a1", "recipientAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
+composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.CreditTransfer", "amount": 800, "fromAccount": "resource:net.sardex.interlace.CCAccount#a1", "toAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
 ```
 
 Submit a debit transfer from account *a1* to *a2* with amount of 200 SRD:
 
 ```bash
-composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.DebitTransfer", "amount": 200, "senderAccount": "resource:net.sardex.interlace.CCAccount#a1", "recipientAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
+composer transaction submit -c admin@sardex-open-network -d  '{ "$class": "net.sardex.interlace.DebitTransfer", "amount": 200, "fromAccount": "resource:net.sardex.interlace.CCAccount#a1", "toAccount": "resource:net.sardex.interlace.CCAccount#a2" }'
 ```
 
 A successful debit transfer creates a PendingTransfer entry with status *Pending* containing an OTP (one time pad). This OTP can be used by the debitor to confirm the transaction. Thus in the next example *"995317396"* is used to call a transaction *DebitTransferAcknowledge* to acknowledge the debit transfer:
@@ -177,7 +177,7 @@ to check the JavaScript code for errors. [eslint](https://eslint.org/) searches 
   - When it is necessary to communicate that something has gone wrong:
     - throw Error or    
     - raise an event
-    
+
     In case of an event a transaction/transfer is recorded, without transferring any money.
   - User Management
     - How to issue certificate ?
@@ -188,7 +188,7 @@ to check the JavaScript code for errors. [eslint](https://eslint.org/) searches 
   - Rest service authentication
   - How to handle event/error delivery
   - Handle private data (GDPR)
-  - composer is only used for prototyping => transition to a plain fabric implementation 
+  - composer is only used for prototyping => transition to a plain fabric implementation
 
 ## General architecture
 
