@@ -160,7 +160,7 @@ event LimitAlert {
 event RequestDebitAcknowledge {
   --> PendingTransfer transfer
 }
-event DebitAcknowledgeInvalid { //TODO
-  o PendingTransfer pendingTransfer
+event DebitAcknowledgeInvalid {
+  --> PendingTransfer pendingTransfer
   o String message
 }
